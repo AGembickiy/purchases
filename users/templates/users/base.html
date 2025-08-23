@@ -171,9 +171,10 @@
             <ul class="nav-list">
                 <li><a href="{% url 'users:home' %}">Главная</a></li>
                 <li><a href="{% url 'users:users_list' %}">Пользователи</a></li>
-                <li><a href="#suppliers">Поставщики</a></li>
-                <li><a href="#products">Товары</a></li>
-                <li><a href="#orders">Заказы</a></li>
+                <li><a href="{% url 'suppliers:suppliers_list' %}">Поставщики</a></li>
+                <li><a href="{% url 'products:products_list' %}">Товары</a></li>
+                <li><a href="{% url 'orders:orders_list' %}">Заказы</a></li>
+                <li><a href="{% url 'departments:departments_list' %}">Подразделения</a></li>
             </ul>
         </div>
     </nav>

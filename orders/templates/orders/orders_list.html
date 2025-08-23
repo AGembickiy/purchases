@@ -1,0 +1,97 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Заказы - Система управления{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <div class="orders-header">
+        <h1>Заказы</h1>
+        <p>Управление заказами и покупками</p>
+    </div>
+
+    <div class="orders-content">
+        <div class="placeholder-content">
+            <div class="placeholder-icon">📋</div>
+            <h2>Модуль заказов</h2>
+            <p>Здесь будет функциональность для управления заказами:</p>
+            <ul>
+                <li>Список заказов</li>
+                <li>Создание новых заказов</li>
+                <li>Статусы и отслеживание</li>
+                <li>История заказов</li>
+                <li>Отчеты и аналитика</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .orders-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border-radius: 15px;
+        color: white;
+    }
+
+    .orders-header h1 {
+        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+    }
+
+    .orders-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .orders-content {
+        background: white;
+        border-radius: 15px;
+        padding: 3rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .placeholder-content {
+        text-align: center;
+    }
+
+    .placeholder-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .placeholder-content h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+
+    .placeholder-content p {
+        color: #7f8c8d;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    .placeholder-content ul {
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto;
+        color: #34495e;
+    }
+
+    .placeholder-content li {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+    }
+</style>
+{% endblock %}

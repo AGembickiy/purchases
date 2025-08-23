@@ -3,15 +3,6 @@
 {% block title %}Список пользователей - Система управления{% endblock %}
 
 {% block content %}
-<div class="users-header">
-    <h1>Список пользователей</h1>
-    {% if can_view_all %}
-        <p>Отображены все пользователи системы</p>
-    {% else %}
-        <p>Отображен ваш профиль (ограниченный доступ)</p>
-    {% endif %}
-</div>
-
 <div class="users-controls">
     {% if can_view_all %}
         <div class="search-box">
@@ -54,6 +45,9 @@
                 {% if user.profile.position %}
                     <p class="user-position">{{ user.profile.position }}</p>
                 {% endif %}
+                {% if user.profile.department %}
+                    <p class="user-department">🏢 {{ user.profile.department }}</p>
+                {% endif %}
                 {% if user.profile.phone %}
                     <p class="user-phone">📞 {{ user.profile.phone }}</p>
                 {% endif %}
@@ -94,25 +88,6 @@
 </div>
 
 <style>
-    .users-header {
-        text-align: center;
-        margin-bottom: 2rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        border-radius: 15px;
-    }
-    
-    .users-header h1 {
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-        font-size: 2.5rem;
-    }
-    
-    .users-header p {
-        color: #34495e;
-        font-size: 1.1rem;
-    }
-    
     .users-controls {
         display: flex;
         justify-content: space-between;
@@ -224,6 +199,12 @@
     
     .user-position {
         color: #3498db;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .user-department {
+        color: #9b59b6;
         font-weight: 500;
         margin-bottom: 0.5rem;
     }
@@ -363,7 +344,7 @@
     
     // Функции для действий с пользователями
     function editUser(userId) {
-        alert('Редактирование пользователя ' + userId + ' (функция в разработке)');
+        window.location.href = `/users/${userId}/edit/`;
     }
     
     function toggleUserStatus(userId, currentStatus) {

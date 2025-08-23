@@ -213,3 +213,51 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@login_required
+def user_edit_view(request, user_id):
+    """Редактирование пользователя администратором"""
+    # Проверяем права доступа
+    if not request.user.is_staff:
+        messages.error(request, 'У вас нет прав для редактирования пользователей.')
+        return redirect('users:users_list')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'Пользователь не найден.')
+        return redirect('users:users_list')
+    
+    if request.method == 'POST':
+        # Обновляем данные пользователя
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', '')
+        user.is_active = request.POST.get('is_active') == 'on'
+        user.is_staff = request.POST.get('is_staff') == 'on'
+        
+        # Обновляем профиль
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        profile.position = request.POST.get('position', '')
+        profile.department = request.POST.get('department', '')
+        profile.phone = request.POST.get('phone', '')
+        profile.email = request.POST.get('profile_email', '')
+        
+        try:
+            user.save()
+            profile.save()
+            messages.success(request, f'Пользователь {user.username} успешно обновлен!')
+            return redirect('users:users_list')
+        except Exception as e:
+            messages.error(request, f'Ошибка при обновлении: {str(e)}')
+    else:
+        # Получаем или создаем профиль
+        profile, created = UserProfile.objects.get_or_create(user=user)
+    
+    context = {
+        'user': user,
+        'profile': profile,
+    }
+    
+    return render(request, 'users/user_edit.html', context)

@@ -1,0 +1,97 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Поставщики - Система управления{% endblock %}
+
+{% block content %}
+<div class="suppliers-container">
+    <div class="suppliers-header">
+        <h1>Поставщики</h1>
+        <p>Управление поставщиками и контрагентами</p>
+    </div>
+
+    <div class="suppliers-content">
+        <div class="placeholder-content">
+            <div class="placeholder-icon">🏢</div>
+            <h2>Модуль поставщиков</h2>
+            <p>Здесь будет функциональность для управления поставщиками:</p>
+            <ul>
+                <li>Список поставщиков</li>
+                <li>Добавление новых поставщиков</li>
+                <li>Редактирование информации</li>
+                <li>История заказов</li>
+                <li>Рейтинг поставщиков</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .suppliers-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .suppliers-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        color: white;
+    }
+
+    .suppliers-header h1 {
+        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+    }
+
+    .suppliers-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .suppliers-content {
+        background: white;
+        border-radius: 15px;
+        padding: 3rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .placeholder-content {
+        text-align: center;
+    }
+
+    .placeholder-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .placeholder-content h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+
+    .placeholder-content p {
+        color: #7f8c8d;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    .placeholder-content ul {
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto;
+        color: #34495e;
+    }
+
+    .placeholder-content li {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+    }
+</style>
+{% endblock %}

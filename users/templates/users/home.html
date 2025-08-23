@@ -15,21 +15,28 @@
         <div class="feature-icon">🏢</div>
         <h3>Поставщики</h3>
         <p>Ведение базы поставщиков, контактной информации и условий сотрудничества</p>
-        <a href="#suppliers" class="feature-link">Перейти →</a>
+        <a href="{% url 'suppliers:suppliers_list' %}" class="feature-link">Перейти →</a>
     </div>
     
     <div class="feature-card">
         <div class="feature-icon">📦</div>
         <h3>Товары</h3>
         <p>Каталог товаров с описанием, ценами и характеристиками</p>
-        <a href="#products" class="feature-link">Перейти →</a>
+        <a href="{% url 'products:products_list' %}" class="feature-link">Перейти →</a>
     </div>
     
     <div class="feature-card">
         <div class="feature-icon">📋</div>
         <h3>Заказы</h3>
         <p>Система заказов с отслеживанием статуса и истории</p>
-        <a href="#orders" class="feature-link">Перейти →</a>
+        <a href="{% url 'orders:orders_list' %}" class="feature-link">Перейти →</a>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">🏛️</div>
+        <h3>Подразделения</h3>
+        <p>Управление структурой организации и иерархией отделов</p>
+        <a href="{% url 'departments:departments_list' %}" class="feature-link">Перейти →</a>
     </div>
 </div>
 
@@ -51,6 +58,10 @@
         <div class="stat-item">
             <div class="stat-number">{{ orders_count|default:"0" }}</div>
             <div class="stat-label">Заказов</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ departments_count|default:"0" }}</div>
+            <div class="stat-label">Подразделений</div>
         </div>
     </div>
 </div>
