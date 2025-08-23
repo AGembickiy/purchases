@@ -154,3 +154,12 @@ Thumbs.db
 # Project specific
 config.py
 .env.example
+
+# Cursor IDE settings
+.cursorrules
+.cursor/
+
+# Project documentation (not for repository)
+GITHUB_SETUP.md
+ARCHITECTURE_GUIDE.md
+frontend-dev-rules.md
