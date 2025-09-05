@@ -21,17 +21,14 @@ class UserProfile(models.Model):
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    """Автоматически создает профиль при создании пользователя"""
+def manage_user_profile(sender, instance, created, **kwargs):
+    """Автоматически создает или обновляет профиль пользователя"""
     if created:
+        # Создаем профиль для нового пользователя
         UserProfile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Автоматически сохраняет профиль при обновлении пользователя"""
-    try:
-        instance.profile.save()
-    except UserProfile.DoesNotExist:
-        # Если профиль не существует, создаем его
-        UserProfile.objects.create(user=instance)
+    else:
+        # Обновляем существующий профиль или создаем, если не существует
+        try:
+            instance.profile.save()
+        except UserProfile.DoesNotExist:
+            UserProfile.objects.create(user=instance)

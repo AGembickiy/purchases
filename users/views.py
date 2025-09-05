@@ -10,10 +10,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from .models import UserProfile
-from .forms import CustomAuthenticationForm, UserProfileForm
+from .forms import (
+    CustomAuthenticationForm, UserProfileForm, 
+    AdminUserEditForm, AdminUserCreateForm
+)
 from .serializers import (
     UserSerializer, UserCreateSerializer, UserUpdateSerializer,
-    ProfileUpdateSerializer
+    ProfileUpdateSerializer, UserProfileSerializer
 )
 
 
@@ -47,10 +50,15 @@ def login_view(request):
     return render(request, 'users/login.html', {'form': form})
 
 
-def logout_view(request):
+def logout_view(request, company_slug=None):
     """Страница выхода"""
+    # Сохраняем slug компании до очистки сессии, если не пришёл из URL
+    if not company_slug:
+        company_slug = request.session.get('current_company_slug')
     logout(request)
-    return render(request, 'users/logout.html')
+    if company_slug:
+        return redirect('companies:login', company_slug=company_slug)
+    return redirect('companies:select')
 
 
 @login_required
@@ -229,35 +237,56 @@ def user_edit_view(request, user_id):
         messages.error(request, 'Пользователь не найден.')
         return redirect('users:users_list')
     
+    # Создаем или получаем профиль пользователя
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    
     if request.method == 'POST':
-        # Обновляем данные пользователя
-        user.first_name = request.POST.get('first_name', '')
-        user.last_name = request.POST.get('last_name', '')
-        user.email = request.POST.get('email', '')
-        user.is_active = request.POST.get('is_active') == 'on'
-        user.is_staff = request.POST.get('is_staff') == 'on'
-        
-        # Обновляем профиль
-        profile, created = UserProfile.objects.get_or_create(user=user)
-        profile.position = request.POST.get('position', '')
-        profile.department = request.POST.get('department', '')
-        profile.phone = request.POST.get('phone', '')
-        profile.email = request.POST.get('profile_email', '')
-        
-        try:
-            user.save()
-            profile.save()
-            messages.success(request, f'Пользователь {user.username} успешно обновлен!')
-            return redirect('users:users_list')
-        except Exception as e:
-            messages.error(request, f'Ошибка при обновлении: {str(e)}')
+        form = AdminUserEditForm(request.POST, instance=user)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, f'Пользователь {user.username} успешно обновлен!')
+                return redirect('users:users_list')
+            except Exception as e:
+                messages.error(request, f'Ошибка при обновлении: {str(e)}')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
-        # Получаем или создаем профиль
-        profile, created = UserProfile.objects.get_or_create(user=user)
+        form = AdminUserEditForm(instance=user)
     
     context = {
+        'form': form,
         'user': user,
         'profile': profile,
     }
     
     return render(request, 'users/user_edit.html', context)
+
+
+@login_required
+def user_create_view(request):
+    """Создание нового пользователя администратором"""
+    # Проверяем права доступа
+    if not request.user.is_staff:
+        messages.error(request, 'У вас нет прав для создания пользователей.')
+        return redirect('users:users_list')
+    
+    if request.method == 'POST':
+        form = AdminUserCreateForm(request.POST)
+        if form.is_valid():
+            try:
+                user = form.save()
+                messages.success(request, f'Пользователь {user.username} успешно создан!')
+                return redirect('users:users_list')
+            except Exception as e:
+                messages.error(request, f'Ошибка при создании пользователя: {str(e)}')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
+    else:
+        form = AdminUserCreateForm()
+    
+    context = {
+        'form': form,
+    }
+    
+    return render(request, 'users/user_create.html', context)

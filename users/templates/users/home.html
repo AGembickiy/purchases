@@ -3,166 +3,116 @@
 {% block title %}Главная - Система управления{% endblock %}
 
 {% block content %}
-<div class="features-grid">
-    <div class="feature-card">
-        <div class="feature-icon">👥</div>
-        <h3>Пользователи</h3>
-        <p>Управление пользователями системы, их профилями и правами доступа</p>
-        <a href="{% url 'users:users_list' %}" class="feature-link">Перейти →</a>
+<!-- Приветственная секция -->
+<div class="mb-12">
+    <h1 class="text-4xl font-bold text-neutral-900 mb-4">Добро пожаловать в систему управления</h1>
+    <p class="text-xl text-neutral-600 max-w-3xl">
+        Комплексная система для управления пользователями, поставщиками, товарами, заказами и подразделениями организации.
+    </p>
+</div>
+
+<!-- Карточки функций -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+    <div class="card hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+        <div class="card-body text-center">
+            <div class="text-5xl mb-4">👥</div>
+            <h3 class="text-xl font-semibold text-neutral-900 mb-3">Пользователи</h3>
+            <p class="text-neutral-600 mb-6 leading-relaxed">
+                Управление пользователями системы, их профилями и правами доступа
+            </p>
+            <a href="{% url 'users:users_list' %}" class="btn btn-primary">
+                Перейти →
+            </a>
+        </div>
     </div>
     
-    <div class="feature-card">
-        <div class="feature-icon">🏢</div>
-        <h3>Поставщики</h3>
-        <p>Ведение базы поставщиков, контактной информации и условий сотрудничества</p>
-        <a href="{% url 'suppliers:suppliers_list' %}" class="feature-link">Перейти →</a>
+    <div class="card hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+        <div class="card-body text-center">
+            <div class="text-5xl mb-4">🏢</div>
+            <h3 class="text-xl font-semibold text-neutral-900 mb-3">Поставщики</h3>
+            <p class="text-neutral-600 mb-6 leading-relaxed">
+                Ведение базы поставщиков, контактной информации и условий сотрудничества
+            </p>
+            <a href="{% url 'suppliers:suppliers_list' %}" class="btn btn-primary">
+                Перейти →
+            </a>
+        </div>
     </div>
     
-    <div class="feature-card">
-        <div class="feature-icon">📦</div>
-        <h3>Товары</h3>
-        <p>Каталог товаров с описанием, ценами и характеристиками</p>
-        <a href="{% url 'products:products_list' %}" class="feature-link">Перейти →</a>
+    <div class="card hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+        <div class="card-body text-center">
+            <div class="text-5xl mb-4">📦</div>
+            <h3 class="text-xl font-semibold text-neutral-900 mb-3">Товары</h3>
+            <p class="text-neutral-600 mb-6 leading-relaxed">
+                Каталог товаров с описанием, ценами и характеристиками
+            </p>
+            <a href="{% url 'products:products_list' %}" class="btn btn-primary">
+                Перейти →
+            </a>
+        </div>
     </div>
     
-    <div class="feature-card">
-        <div class="feature-icon">📋</div>
-        <h3>Заказы</h3>
-        <p>Система заказов с отслеживанием статуса и истории</p>
-        <a href="{% url 'orders:orders_list' %}" class="feature-link">Перейти →</a>
+    <div class="card hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+        <div class="card-body text-center">
+            <div class="text-5xl mb-4">📋</div>
+            <h3 class="text-xl font-semibold text-neutral-900 mb-3">Заказы</h3>
+            <p class="text-neutral-600 mb-6 leading-relaxed">
+                Система заказов с отслеживанием статуса и истории
+            </p>
+            <a href="{% url 'orders:orders_list' %}" class="btn btn-primary">
+                Перейти →
+            </a>
+        </div>
     </div>
     
-    <div class="feature-card">
-        <div class="feature-icon">🏛️</div>
-        <h3>Подразделения</h3>
-        <p>Управление структурой организации и иерархией отделов</p>
-        <a href="{% url 'departments:departments_list' %}" class="feature-link">Перейти →</a>
+    <div class="card hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+        <div class="card-body text-center">
+            <div class="text-5xl mb-4">🏛️</div>
+            <h3 class="text-xl font-semibold text-neutral-900 mb-3">Подразделения</h3>
+            <p class="text-neutral-600 mb-6 leading-relaxed">
+                Управление структурой организации и иерархией отделов
+            </p>
+            <a href="{% url 'departments:departments_list' %}" class="btn btn-primary">
+                Перейти →
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="stats-section">
-    <h2>Статистика системы</h2>
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-number">{{ users_count|default:"0" }}</div>
-            <div class="stat-label">Пользователей</div>
+<!-- Статистика системы -->
+<div class="mb-8">
+    <h2 class="text-3xl font-bold text-neutral-900 mb-8 text-center">Статистика системы</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-4xl font-bold text-primary-600 mb-2">{{ users_count|default:"0" }}</div>
+                <div class="text-neutral-600 font-medium">Пользователей</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ suppliers_count|default:"0" }}</div>
-            <div class="stat-label">Поставщиков</div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-4xl font-bold text-primary-600 mb-2">{{ suppliers_count|default:"0" }}</div>
+                <div class="text-neutral-600 font-medium">Поставщиков</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ products_count|default:"0" }}</div>
-            <div class="stat-label">Товаров</div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-4xl font-bold text-primary-600 mb-2">{{ products_count|default:"0" }}</div>
+                <div class="text-neutral-600 font-medium">Товаров</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ orders_count|default:"0" }}</div>
-            <div class="stat-label">Заказов</div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-4xl font-bold text-primary-600 mb-2">{{ orders_count|default:"0" }}</div>
+                <div class="text-neutral-600 font-medium">Заказов</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ departments_count|default:"0" }}</div>
-            <div class="stat-label">Подразделений</div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-4xl font-bold text-primary-600 mb-2">{{ departments_count|default:"0" }}</div>
+                <div class="text-neutral-600 font-medium">Подразделений</div>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-bottom: 3rem;
-    }
-    
-    .feature-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    
-    .feature-card h3 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        font-size: 1.3rem;
-    }
-    
-    .feature-card p {
-        color: #7f8c8d;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
-    }
-    
-    .feature-link {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: #3498db;
-        color: white;
-        text-decoration: none;
-        border-radius: 25px;
-        transition: background-color 0.3s;
-    }
-    
-    .feature-link:hover {
-        background: #2980b9;
-    }
-    
-    .stats-section {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    
-    .stats-section h2 {
-        color: #2c3e50;
-        margin-bottom: 2rem;
-        font-size: 2rem;
-    }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 2rem;
-    }
-    
-    .stat-item {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #3498db;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-label {
-        color: #7f8c8d;
-        font-weight: 500;
-    }
-    
-    @media (max-width: 768px) {
-        .features-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-</style>
 {% endblock %}

@@ -21,14 +21,32 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),
-    path('suppliers/', include('suppliers.urls')),
-    path('products/', include('products.urls')),
-    path('orders/', include('orders.urls')),
-    path('departments/', include('departments.urls')),
+    
+    # Система компаний (главная точка входа)
+    path('companies/', include('companies.urls')),
+    
+    # Редирект с главной страницы на выбор компании  
+    path('', include(('companies.urls', 'companies'), namespace='main')),
+    
+    # Старые URL-ы пользователей (временно сохраняем для совместимости)
+    path('legacy/users/', include(('users.urls', 'users'), namespace='legacy_users')),
+    
+    # URL-ы в контексте компании
+    path('companies/<slug:company_slug>/users/', include(('users.urls', 'users'), namespace='company_users')),
+    path('companies/<slug:company_slug>/suppliers/', include(('suppliers.urls', 'suppliers'), namespace='company_suppliers')),
+    path('companies/<slug:company_slug>/products/', include(('products.urls', 'products'), namespace='company_products')),
+    path('companies/<slug:company_slug>/orders/', include(('orders.urls', 'orders'), namespace='company_orders')),
+    path('companies/<slug:company_slug>/departments/', include(('departments.urls', 'departments'), namespace='company_departments')),
+    
+    # API аутентификация
     path('api-auth/', include('rest_framework.urls')),
 ]
 
 # Добавляем статические файлы для разработки
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Добавляем Django Debug Toolbar URLs
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

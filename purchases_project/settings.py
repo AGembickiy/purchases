@@ -11,22 +11,30 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Initialize django-environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+# Read .env file if it exists
+environ.Env.read_env(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-your-secret-key-here')
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-your-secret-key-here')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = env('DEBUG', default=True)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 
 # Application definition
@@ -38,8 +46,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Для allauth
+    
+    # Third party Django apps
     'rest_framework',
     'corsheaders',
+    'crispy_forms',
+    'widget_tweaks',
+    'django_extensions',
+    'debug_toolbar',
+    'django_cleanup.apps.CleanupConfig',
+    'import_export',
+    
+    # Local apps
+    'companies',  # Новое приложение для управления компаниями
     'users',
     'suppliers',
     'products',
@@ -49,11 +69,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Debug toolbar
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'companies.middleware.CompanyMiddleware',  # Middleware для работы с компаниями
+    'companies.middleware.CompanyContextMiddleware',  # Контекст компании в шаблонах
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -155,3 +178,41 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Django Crispy Forms settings
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Debug Toolbar settings
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+        "localhost",
+    ]
+    
+    # Выключаем тулбар полностью
+    def show_toolbar(request):
+        return False
+    
+    # Настройки Debug Toolbar
+    DEBUG_TOOLBAR_CONFIG = {
+        'DISABLE_PANELS': [
+            'debug_toolbar.panels.redirects.RedirectsPanel',  # Отключаем перехват редиректов
+            'debug_toolbar.panels.profiling.ProfilingPanel',  # Отключаем панель профилирования (конфликт)
+        ],
+        'SHOW_TEMPLATE_CONTEXT': True,
+        'SHOW_COLLAPSED': True,
+        'INTERCEPT_REDIRECTS': False,  # Полностью отключаем перехват редиректов
+        'SHOW_TOOLBAR_CALLBACK': 'purchases_project.settings.show_toolbar',
+    }
+
+# Sites framework
+SITE_ID = 1
+
+# Настройки авторизации для мультитенантной системы
+LOGIN_URL = '/companies/'  # Перенаправляем на выбор компании вместо стандартного логина
+LOGIN_REDIRECT_URL = '/companies/'  # После логина перенаправляем на выбор компании
+LOGOUT_REDIRECT_URL = '/companies/'  # После выхода перенаправляем на выбор компании
+
+# Import Export settings
+IMPORT_EXPORT_USE_TRANSACTIONS = True
