@@ -1,0 +1,450 @@
+{% extends 'companies/user_base.html' %}
+
+{% block title %}Пользователи - {{ company.name }} - Система управления{% endblock %}
+
+{% block user_content %}
+{% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+    <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="users-controls">
+    {% if can_view_all %}
+        <div class="search-box">
+            <input type="text" id="userSearch" placeholder="Поиск пользователей..." class="search-input">
+            <button class="search-btn">🔍</button>
+        </div>
+        <div class="filter-controls">
+            <select id="statusFilter" class="filter-select">
+                <option value="">Все статусы</option>
+                <option value="active">Активные</option>
+                <option value="inactive">Неактивные</option>
+            </select>
+        </div>
+        <div class="add-user-control">
+            <a href="{% url 'company_users:user_create' company_slug %}" class="btn-add-user">➕ Добавить пользователя</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="users-grid">
+    {% for user in users %}
+    <div class="user-card" data-username="{{ user.username }}" data-status="{% if user.is_active %}active{% else %}inactive{% endif %}">
+        <div class="user-avatar">
+            {% if user.profile %}
+                <div class="avatar-placeholder">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
+            {% else %}
+                <div class="avatar-placeholder">{{ user.username|first|upper }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="user-info">
+            <h3 class="user-name">
+                {% if user.first_name and user.last_name %}
+                    {{ user.first_name }} {{ user.last_name }}
+                {% else %}
+                    {{ user.username }}
+                {% endif %}
+            </h3>
+            
+            <p class="user-username">@{{ user.username }}</p>
+            
+            {% if user.profile %}
+                {% if user.profile.position %}
+                    <p class="user-position">{{ user.profile.position }}</p>
+                {% endif %}
+                {% if user.profile.department %}
+                    <p class="user-department">🏢 {{ user.profile.department }}</p>
+                {% endif %}
+                {% if user.profile.phone %}
+                    <p class="user-phone">📞 {{ user.profile.phone }}</p>
+                {% endif %}
+                {% if user.profile.email %}
+                    <p class="user-email">📧 {{ user.profile.email }}</p>
+                {% endif %}
+            {% endif %}
+            
+            <p class="user-email-main">📧 {{ user.email|default:"Email не указан" }}</p>
+            <p class="user-status">
+                Статус: 
+                <span class="status-badge {% if user.is_active %}status-active{% else %}status-inactive{% endif %}">
+                    {% if user.is_active %}Активен{% else %}Неактивен{% endif %}
+                </span>
+            </p>
+            
+            {% if user.is_staff %}
+                <p class="user-role">👑 Администратор</p>
+            {% endif %}
+        </div>
+        
+        <div class="user-actions">
+            {% if can_view_all and user != current_user %}
+                <button class="btn-edit" onclick="editUser({{ user.id }})">✏️ Редактировать</button>
+                <button class="btn-toggle-status" onclick="toggleUserStatus({{ user.id }}, '{{ user.is_active }}')">
+                    {% if user.is_active %}🚫 Деактивировать{% else %}✅ Активировать{% endif %}
+                </button>
+            {% elif user == current_user %}
+                <button class="btn-edit-profile" onclick="editMyProfile()">✏️ Редактировать профиль</button>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-users">
+        <p>Пользователи не найдены</p>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .messages-container {
+        margin-bottom: 2rem;
+    }
+    
+    .message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+    
+    .message-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .message-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .message-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .message-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+    
+    .users-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .search-box {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .search-input {
+        padding: 0.8rem;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        font-size: 1rem;
+        min-width: 300px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+    
+    .search-input:focus {
+        border-color: #3498db;
+    }
+    
+    .search-btn {
+        padding: 0.8rem 1.2rem;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+    }
+    
+    .search-btn:hover {
+        background: #2980b9;
+    }
+    
+    .filter-select {
+        padding: 0.8rem;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        font-size: 1rem;
+        outline: none;
+        cursor: pointer;
+    }
+    
+    .add-user-control {
+        display: flex;
+        align-items: center;
+    }
+    
+    .btn-add-user {
+        padding: 0.8rem 1.5rem;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-add-user:hover {
+        background: #229954;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+    }
+    
+    .users-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+    
+    .user-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 2px solid transparent;
+    }
+    
+    .user-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border-color: #3498db;
+    }
+    
+    .user-avatar {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto;
+    }
+    
+    .user-info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .user-name {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .user-username {
+        color: #7f8c8d;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .user-position {
+        color: #3498db;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .user-department {
+        color: #9b59b6;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .user-phone, .user-email, .user-email-main {
+        color: #7f8c8d;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+    }
+    
+    .user-status {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .user-role {
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    
+    .user-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-edit, .btn-toggle-status, .btn-edit-profile {
+        padding: 0.6rem 1rem;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+    }
+    
+    .btn-edit, .btn-edit-profile {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-edit:hover, .btn-edit-profile:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+    
+    .btn-toggle-status {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .btn-toggle-status:hover {
+        background: #e67e22;
+        transform: translateY(-2px);
+    }
+    
+    .no-users {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .users-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-input {
+            min-width: auto;
+        }
+        
+        .users-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .user-card {
+            margin: 0 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Поиск пользователей
+    document.getElementById('userSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const userCards = document.querySelectorAll('.user-card');
+        
+        userCards.forEach(card => {
+            const username = card.dataset.username.toLowerCase();
+            const name = card.querySelector('.user-name').textContent.toLowerCase();
+            
+            if (username.includes(searchTerm) || name.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+    
+    // Фильтр по статусу
+    document.getElementById('statusFilter').addEventListener('change', function(e) {
+        const status = e.target.value;
+        const userCards = document.querySelectorAll('.user-card');
+        
+        userCards.forEach(card => {
+            const userStatus = card.dataset.status;
+            
+            if (!status || userStatus === status) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+    
+    // Функции для действий с пользователями
+    function editUser(userId) {
+        window.location.href = `/companies/{{ company_slug }}/users/users/${userId}/edit/`;
+    }
+    
+    function toggleUserStatus(userId, currentStatus) {
+        const newStatus = currentStatus === 'True' ? 'деактивировать' : 'активировать';
+        if (confirm(`Вы уверены, что хотите ${newStatus} пользователя?`)) {
+            alert(`Статус пользователя ${userId} изменен (функция в разработке)`);
+        }
+    }
+    
+    function editMyProfile() {
+        alert('Редактирование профиля (функция в разработке)');
+    }
+    
+    // Автоматическое скрытие сообщений через 5 секунд
+    document.addEventListener('DOMContentLoaded', function() {
+        const messages = document.querySelectorAll('.message');
+        messages.forEach(function(message) {
+            setTimeout(function() {
+                message.style.opacity = '0';
+                message.style.transition = 'opacity 0.5s';
+                setTimeout(function() {
+                    message.remove();
+                }, 500);
+            }, 5000);
+        });
+    });
+</script>
+{% endblock %}

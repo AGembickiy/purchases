@@ -1,0 +1,63 @@
+{% extends 'companies/base.html' %}
+
+{% block title %}Вход в {{ company.name }} - Система закупок{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4 class="mb-1">{{ company.name }}</h4>
+                <small class="text-muted">{{ company.get_company_type_display }}</small>
+            </div>
+            <div class="card-body">
+                {% if company.description %}
+                <p class="text-muted small">{{ company.description }}</p>
+                <hr>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Имя пользователя</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Войти</button>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <a href="{% url 'companies:select' %}" class="btn btn-link btn-sm">
+                        ← Выбрать другую компанию
+                    </a>
+                </div>
+            </div>
+            
+            {% if company.address or company.phone or company.email %}
+            <div class="card-footer">
+                <small class="text-muted">
+                    {% if company.address %}
+                        <div><i class="bi bi-geo-alt"></i> {{ company.address }}{% if company.city %}, {{ company.city }}{% endif %}</div>
+                    {% endif %}
+                    {% if company.phone %}
+                        <div><i class="bi bi-telephone"></i> {{ company.phone }}</div>
+                    {% endif %}
+                    {% if company.email %}
+                        <div><i class="bi bi-envelope"></i> {{ company.email }}</div>
+                    {% endif %}
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

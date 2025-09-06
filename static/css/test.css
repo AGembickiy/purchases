@@ -1,0 +1,63 @@
+/* Переопределения и дополнения к основной системе стилей */
+
+/* Дополнительные градиенты */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700));
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, var(--color-success-500), var(--color-success-700));
+}
+
+.gradient-warning {
+    background: linear-gradient(135deg, var(--color-warning-500), var(--color-warning-700));
+}
+
+/* Дополнительные утилиты для цветов */
+.bg-primary-600 {
+    background-color: var(--color-primary-600);
+}
+
+.text-primary-600 {
+    color: var(--color-primary-600);
+}
+
+.bg-neutral-50 {
+    background-color: var(--color-neutral-50);
+}
+
+.text-neutral-900 {
+    color: var(--color-neutral-900);
+}
+
+/* Улучшенные карточки */
+.card {
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-neutral-200);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-1px);
+}
+
+/* Улучшенные кнопки */
+.btn-primary {
+    background-color: var(--color-primary-600);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-700);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-medium);
+}

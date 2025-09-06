@@ -1,0 +1,79 @@
+{% extends 'companies/base.html' %}
+
+{% block title %}Выбор компании - Система закупок{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Вход в систему</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Введите идентификатор вашей компании для входа в систему</p>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="get">
+                    <div class="mb-3">
+                        {{ form.company_slug.label_tag }}
+                        {{ form.company_slug }}
+                        {% if form.company_slug.help_text %}
+                            <div class="form-text">{{ form.company_slug.help_text }}</div>
+                        {% endif %}
+                        <div class="form-text text-muted">Например: <code>test-company</code></div>
+                        {% if form.company_slug.errors %}
+                            <div class="text-danger">
+                                {% for error in form.company_slug.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Перейти</button>
+                </form>
+                <script>
+                  (function(){
+                    var el = document.getElementById('id_company_slug');
+                    if (el && !el.hasAttribute('autofocus')) { try { el.focus(); } catch(e) {} }
+                  })();
+                </script>
+                
+                {% if popular_companies %}
+                <hr>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-2">Доступные компании:</h6>
+                    <div class="list-group list-group-flush">
+                        {% for company in popular_companies %}
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0 py-2"
+                           href="/companies/{{ company.slug }}/">
+                            <div>
+                                <strong>{{ company.name }}</strong>
+                                <small class="text-muted d-block">ID: {{ company.slug }}</small>
+                            </div>
+                            <span class="btn btn-sm btn-outline-primary">Открыть</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="text-center">
+                    <p class="mb-2">У вас еще нет компании?</p>
+                    <a href="{% url 'companies:register' %}" class="btn btn-outline-success">Зарегистрировать компанию</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

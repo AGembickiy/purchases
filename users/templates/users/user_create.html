@@ -1,0 +1,289 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Создание пользователя - Система управления{% endblock %}
+
+{% block content %}
+<div class="create-user-container">
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" class="create-user-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3>Основная информация</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Имя пользователя *</label>
+                    <input type="text" id="username" name="username" required class="form-control">
+                    <small>Уникальное имя для входа в систему</small>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль *</label>
+                    <input type="password" id="password" name="password" required class="form-control">
+                    <small>Минимум 8 символов</small>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">Имя</label>
+                    <input type="text" id="first_name" name="first_name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Фамилия</label>
+                    <input type="text" id="last_name" name="last_name" class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Профиль</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="position">Должность</label>
+                    <input type="text" id="position" name="position" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="department">Подразделение</label>
+                    <input type="text" id="department" name="department" class="form-control">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">Телефон</label>
+                    <input type="tel" id="phone" name="phone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="profile_email">Email (профиль)</label>
+                    <input type="email" id="profile_email" name="profile_email" class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Права доступа</h3>
+            <div class="form-row">
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_active" checked>
+                        <span class="checkmark"></span>
+                        Активный пользователь
+                    </label>
+                    <small>Неактивные пользователи не могут войти в систему</small>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_staff">
+                        <span class="checkmark"></span>
+                        Администратор
+                    </label>
+                    <small>Администраторы имеют полный доступ к системе</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-create">➕ Создать пользователя</button>
+            <a href="{% url 'users:users_list' %}" class="btn-cancel">❌ Отмена</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .messages-container {
+        margin-bottom: 2rem;
+    }
+    
+    .message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+    
+    .message-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .message-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .message-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .message-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+    
+    .create-user-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .create-user-form {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .form-section h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        border-left: 4px solid #27ae60;
+        padding-left: 1rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        padding: 0.8rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #27ae60;
+        box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+    }
+
+    .form-group small {
+        color: #6c757d;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        margin-right: 0.5rem;
+        width: 18px;
+        height: 18px;
+        accent-color: #27ae60;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn-create, .btn-cancel {
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .btn-create {
+        background: #27ae60;
+        color: white;
+    }
+
+    .btn-create:hover {
+        background: #229954;
+        transform: translateY(-2px);
+    }
+
+    .btn-cancel {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .create-user-container {
+            padding: 1rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from .models import UserProfile
+from companies.models import Company
 from .forms import (
     CustomAuthenticationForm, UserProfileForm, 
     AdminUserEditForm, AdminUserCreateForm
@@ -78,13 +79,19 @@ def profile_edit_view(request):
     return render(request, 'users/profile_edit.html', {'form': form})
 
 
-def users_list_view(request):
+def users_list_view(request, company_slug):
     """Список пользователей - доступен только админам и пользователям с правами"""
     if not request.user.is_authenticated:
         return redirect('admin:login')
     
+    # Получаем объект компании
+    company = get_object_or_404(Company, slug=company_slug)
+    
     # Проверяем права доступа
     can_view_all = request.user.is_staff or request.user.has_perm('auth.view_user')
+    
+    # Определяем текущий namespace для правильной генерации URL
+    current_namespace = 'company_users' if company_slug else 'users'
     
     if can_view_all:
         # Админ или пользователь с правами видит всех
@@ -92,7 +99,10 @@ def users_list_view(request):
         context = {
             'users': users,
             'can_view_all': True,
-            'current_user': request.user
+            'current_user': request.user,
+            'company': company,
+            'company_slug': company_slug,
+            'namespace': current_namespace
         }
     else:
         # Обычный пользователь видит только себя
@@ -100,10 +110,16 @@ def users_list_view(request):
         context = {
             'users': users,
             'can_view_all': False,
-            'current_user': request.user
+            'current_user': request.user,
+            'company': company,
+            'company_slug': company_slug,
+            'namespace': current_namespace
         }
     
-    return render(request, 'users/users_list.html', context)
+    # Выбираем правильный шаблон в зависимости от контекста
+    template_name = 'users/company_users_list.html' if company_slug else 'users/users_list.html'
+    
+    return render(request, template_name, context)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -224,18 +240,27 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 
 @login_required
-def user_edit_view(request, user_id):
+def user_edit_view(request, user_id, company_slug=None):
     """Редактирование пользователя администратором"""
     # Проверяем права доступа
     if not request.user.is_staff:
         messages.error(request, 'У вас нет прав для редактирования пользователей.')
+        if company_slug:
+            return redirect('company_users:users_list', company_slug=company_slug)
         return redirect('users:users_list')
     
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         messages.error(request, 'Пользователь не найден.')
+        if company_slug:
+            return redirect('company_users:users_list', company_slug=company_slug)
         return redirect('users:users_list')
+    
+    # Получаем объект компании если указан
+    company = None
+    if company_slug:
+        company = get_object_or_404(Company, slug=company_slug)
     
     # Создаем или получаем профиль пользователя
     profile, created = UserProfile.objects.get_or_create(user=user)
@@ -246,6 +271,8 @@ def user_edit_view(request, user_id):
             try:
                 form.save()
                 messages.success(request, f'Пользователь {user.username} успешно обновлен!')
+                if company_slug:
+                    return redirect('company_users:users_list', company_slug=company_slug)
                 return redirect('users:users_list')
             except Exception as e:
                 messages.error(request, f'Ошибка при обновлении: {str(e)}')
@@ -258,18 +285,29 @@ def user_edit_view(request, user_id):
         'form': form,
         'user': user,
         'profile': profile,
+        'company': company,
     }
     
-    return render(request, 'users/user_edit.html', context)
+    # Выбираем правильный шаблон в зависимости от контекста
+    template_name = 'users/company_user_edit.html' if company_slug else 'users/user_edit.html'
+    
+    return render(request, template_name, context)
 
 
 @login_required
-def user_create_view(request):
+def user_create_view(request, company_slug=None):
     """Создание нового пользователя администратором"""
     # Проверяем права доступа
     if not request.user.is_staff:
         messages.error(request, 'У вас нет прав для создания пользователей.')
+        if company_slug:
+            return redirect('company_users:users_list', company_slug=company_slug)
         return redirect('users:users_list')
+    
+    # Получаем объект компании если указан
+    company = None
+    if company_slug:
+        company = get_object_or_404(Company, slug=company_slug)
     
     if request.method == 'POST':
         form = AdminUserCreateForm(request.POST)
@@ -277,6 +315,8 @@ def user_create_view(request):
             try:
                 user = form.save()
                 messages.success(request, f'Пользователь {user.username} успешно создан!')
+                if company_slug:
+                    return redirect('company_users:users_list', company_slug=company_slug)
                 return redirect('users:users_list')
             except Exception as e:
                 messages.error(request, f'Ошибка при создании пользователя: {str(e)}')
@@ -287,6 +327,10 @@ def user_create_view(request):
     
     context = {
         'form': form,
+        'company': company,
     }
     
-    return render(request, 'users/user_create.html', context)
+    # Выбираем правильный шаблон в зависимости от контекста
+    template_name = 'users/company_user_create.html' if company_slug else 'users/user_create.html'
+    
+    return render(request, template_name, context)

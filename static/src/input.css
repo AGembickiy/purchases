@@ -1,0 +1,633 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS переменные для цветовой схемы */
+:root {
+  /* Основные цвета - синяя палитра */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Вторичные цвета - серая палитра */
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+
+  /* Акцентные цвета - зеленая палитра */
+  --color-accent-50: #f0fdf4;
+  --color-accent-100: #dcfce7;
+  --color-accent-200: #bbf7d0;
+  --color-accent-300: #86efac;
+  --color-accent-400: #4ade80;
+  --color-accent-500: #22c55e;
+  --color-accent-600: #16a34a;
+  --color-accent-700: #15803d;
+  --color-accent-800: #166534;
+  --color-accent-900: #14532d;
+
+  /* Нейтральные цвета */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+
+  /* Цвета успеха */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+
+  /* Цвета предупреждения */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* Цвета ошибки */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+
+  /* Шрифты */
+  --font-sans: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+
+  /* Тени */
+  --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-hard: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Размеры */
+  --header-height: 4rem;
+  --sidebar-width: 16rem;
+  --content-max-width: 80rem;
+  --dashboard-card-min-height: 8rem;
+  --table-row-height: 3rem;
+  --form-field-height: 2.75rem;
+
+  /* Радиусы скругления */
+  --border-radius-sm: 0.375rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-xl: 1rem;
+
+  /* Отступы */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Переходы */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+
+  /* Статусы заказов и операций */
+  --color-status-draft: var(--color-neutral-500);
+  --color-status-pending: var(--color-warning-500);
+  --color-status-processing: var(--color-primary-500);
+  --color-status-completed: var(--color-success-500);
+  --color-status-cancelled: var(--color-error-500);
+  --color-status-on-hold: var(--color-secondary-500);
+
+  /* Приоритеты */
+  --color-priority-low: var(--color-success-400);
+  --color-priority-medium: var(--color-warning-400);
+  --color-priority-high: var(--color-error-400);
+  --color-priority-urgent: var(--color-error-600);
+
+  /* Категории товаров */
+  --color-category-electronics: #6366f1;
+  --color-category-office: #8b5cf6;
+  --color-category-furniture: #06b6d4;
+  --color-category-supplies: #10b981;
+  --color-category-equipment: #f59e0b;
+  --color-category-services: #ef4444;
+}
+
+/* Темная тема */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Основные цвета для темной темы */
+    --color-primary-50: #1e3a8a;
+    --color-primary-100: #1e40af;
+    --color-primary-200: #1d4ed8;
+    --color-primary-300: #2563eb;
+    --color-primary-400: #3b82f6;
+    --color-primary-500: #60a5fa;
+    --color-primary-600: #93c5fd;
+    --color-primary-700: #bfdbfe;
+    --color-primary-800: #dbeafe;
+    --color-primary-900: #eff6ff;
+
+    /* Вторичные цвета для темной темы */
+    --color-secondary-50: #0f172a;
+    --color-secondary-100: #1e293b;
+    --color-secondary-200: #334155;
+    --color-secondary-300: #475569;
+    --color-secondary-400: #64748b;
+    --color-secondary-500: #94a3b8;
+    --color-secondary-600: #cbd5e1;
+    --color-secondary-700: #e2e8f0;
+    --color-secondary-800: #f1f5f9;
+    --color-secondary-900: #f8fafc;
+
+    /* Нейтральные цвета для темной темы */
+    --color-neutral-50: #171717;
+    --color-neutral-100: #262626;
+    --color-neutral-200: #404040;
+    --color-neutral-300: #525252;
+    --color-neutral-400: #737373;
+    --color-neutral-500: #a3a3a3;
+    --color-neutral-600: #d4d4d4;
+    --color-neutral-700: #e5e5e5;
+    --color-neutral-800: #f5f5f5;
+    --color-neutral-900: #fafafa;
+  }
+}
+
+/* Базовые стили */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-neutral-900;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors;
+  }
+
+  button {
+    @apply transition-all duration-200;
+  }
+
+  input, textarea, select {
+    @apply transition-all duration-200;
+  }
+}
+
+/* Компоненты */
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500;
+  }
+
+  .btn-success {
+    @apply bg-success-600 text-white hover:bg-success-700 focus:ring-success-500;
+  }
+
+  .btn-warning {
+    @apply bg-warning-600 text-white hover:bg-warning-700 focus:ring-warning-500;
+  }
+
+  .btn-error {
+    @apply bg-error-600 text-white hover:bg-error-700 focus:ring-error-500;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white focus:ring-primary-500;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-soft border border-neutral-200;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-neutral-200;
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  .card-footer {
+    @apply px-6 py-4 border-t border-neutral-200;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-neutral-700 mb-1;
+  }
+
+  .form-error {
+    @apply text-error-600 text-sm mt-1;
+  }
+
+  .table {
+    @apply w-full border-collapse;
+  }
+
+  .table th {
+    @apply px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider border-b border-neutral-200;
+  }
+
+  .table td {
+    @apply px-4 py-3 text-sm text-neutral-900 border-b border-neutral-200;
+  }
+
+  .table tbody tr:hover {
+    @apply bg-neutral-50;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-primary-100 text-primary-800;
+  }
+
+  .badge-secondary {
+    @apply bg-secondary-100 text-secondary-800;
+  }
+
+  .badge-success {
+    @apply bg-success-100 text-success-800;
+  }
+
+  .badge-warning {
+    @apply bg-warning-100 text-warning-800;
+  }
+
+  .badge-error {
+    @apply bg-error-100 text-error-800;
+  }
+
+  .alert {
+    @apply p-4 rounded-lg border;
+  }
+
+  .alert-success {
+    @apply bg-success-50 border-success-200 text-success-800;
+  }
+
+  .alert-warning {
+    @apply bg-warning-50 border-warning-200 text-warning-800;
+  }
+
+  .alert-error {
+    @apply bg-error-50 border-error-200 text-error-800;
+  }
+
+  .alert-info {
+    @apply bg-primary-50 border-primary-200 text-primary-800;
+  }
+
+  /* === КОМПОНЕНТЫ СИСТЕМЫ ЗАКУПОК === */
+
+  /* Dashboard карточки */
+  .dashboard-card {
+    @apply bg-white rounded-xl shadow-soft border border-neutral-200 p-6 transition-all duration-200;
+    min-height: var(--dashboard-card-min-height);
+  }
+
+  .dashboard-card:hover {
+    @apply shadow-medium;
+    transform: translateY(-2px);
+  }
+
+  .dashboard-metric {
+    @apply text-center;
+  }
+
+  .dashboard-metric-value {
+    @apply text-3xl font-bold text-neutral-900 mb-1;
+  }
+
+  .dashboard-metric-label {
+    @apply text-sm text-neutral-500 uppercase tracking-wide;
+  }
+
+  /* Статусные компоненты */
+  .status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-draft {
+    background-color: var(--color-status-draft);
+    color: white;
+  }
+
+  .status-pending {
+    background-color: var(--color-status-pending);
+    color: white;
+  }
+
+  .status-processing {
+    background-color: var(--color-status-processing);
+    color: white;
+  }
+
+  .status-completed {
+    background-color: var(--color-status-completed);
+    color: white;
+  }
+
+  .status-cancelled {
+    background-color: var(--color-status-cancelled);
+    color: white;
+  }
+
+  .status-on-hold {
+    background-color: var(--color-status-on-hold);
+    color: white;
+  }
+
+  /* Приоритеты */
+  .priority-badge {
+    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium;
+  }
+
+  .priority-low {
+    background-color: var(--color-priority-low);
+    color: white;
+  }
+
+  .priority-medium {
+    background-color: var(--color-priority-medium);
+    color: white;
+  }
+
+  .priority-high {
+    background-color: var(--color-priority-high);
+    color: white;
+  }
+
+  .priority-urgent {
+    background-color: var(--color-priority-urgent);
+    color: white;
+  }
+
+  /* Категории товаров */
+  .category-badge {
+    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium text-white;
+  }
+
+  .category-electronics {
+    background-color: var(--color-category-electronics);
+  }
+
+  .category-office {
+    background-color: var(--color-category-office);
+  }
+
+  .category-furniture {
+    background-color: var(--color-category-furniture);
+  }
+
+  .category-supplies {
+    background-color: var(--color-category-supplies);
+  }
+
+  .category-equipment {
+    background-color: var(--color-category-equipment);
+  }
+
+  .category-services {
+    background-color: var(--color-category-services);
+  }
+
+  /* Улучшенные таблицы */
+  .data-table {
+    @apply w-full border-collapse bg-white rounded-lg overflow-hidden shadow-soft;
+  }
+
+  .data-table thead {
+    @apply bg-neutral-50;
+  }
+
+  .data-table th {
+    @apply px-6 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider border-b border-neutral-200;
+  }
+
+  .data-table td {
+    @apply px-6 py-4 text-sm text-neutral-900 border-b border-neutral-100;
+    height: var(--table-row-height);
+  }
+
+  .data-table tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .data-table tbody tr:hover {
+    @apply bg-neutral-50;
+  }
+
+  .data-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* Навигация и макет */
+  .main-header {
+    height: var(--header-height);
+    @apply bg-white shadow-soft border-b border-neutral-200 px-6 flex items-center justify-between;
+  }
+
+  .sidebar {
+    width: var(--sidebar-width);
+    @apply bg-white shadow-soft border-r border-neutral-200 h-full overflow-y-auto;
+  }
+
+  .sidebar-nav {
+    @apply p-4 space-y-2;
+  }
+
+  .sidebar-link {
+    @apply flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200;
+  }
+
+  .sidebar-link:hover {
+    @apply bg-neutral-100 text-neutral-900;
+  }
+
+  .sidebar-link.active {
+    @apply bg-primary-100 text-primary-700;
+  }
+
+  /* Формы */
+  .form-group {
+    @apply mb-6;
+  }
+
+  .form-input-enhanced {
+    height: var(--form-field-height);
+    @apply w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  }
+
+  .form-input-enhanced:focus {
+    @apply shadow-medium;
+  }
+
+  .form-select {
+    height: var(--form-field-height);
+    @apply w-full px-4 py-2 border border-neutral-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  }
+
+  .form-textarea {
+    @apply w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-vertical;
+    min-height: 6rem;
+  }
+
+  /* Кнопки действий */
+  .btn-action {
+    @apply inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-action-edit {
+    @apply bg-primary-100 text-primary-700 hover:bg-primary-200 focus:ring-primary-500;
+  }
+
+  .btn-action-delete {
+    @apply bg-error-100 text-error-700 hover:bg-error-200 focus:ring-error-500;
+  }
+
+  .btn-action-view {
+    @apply bg-neutral-100 text-neutral-700 hover:bg-neutral-200 focus:ring-neutral-500;
+  }
+
+  /* Макеты страниц */
+  .page-container {
+    max-width: var(--content-max-width);
+    @apply mx-auto px-6 py-8;
+  }
+
+  .page-header {
+    @apply mb-8 pb-4 border-b border-neutral-200;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-neutral-900 mb-2;
+  }
+
+  .page-subtitle {
+    @apply text-lg text-neutral-600;
+  }
+
+  .content-section {
+    @apply mb-8;
+  }
+
+  .content-grid {
+    @apply grid gap-6;
+  }
+
+  .content-grid-2 {
+    @apply grid-cols-1 lg:grid-cols-2;
+  }
+
+  .content-grid-3 {
+    @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .content-grid-4 {
+    @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+  }
+}
+
+/* Утилиты */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(209, 213, 219, 0.3);
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700));
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, var(--color-secondary-500), var(--color-secondary-700));
+  }
+}

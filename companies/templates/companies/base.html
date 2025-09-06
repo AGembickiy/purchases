@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Система закупок{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            {% if request.current_company %}
+            <a class="navbar-brand" href="{% url 'companies:dashboard' request.current_company.slug %}">
+                <strong>{{ request.current_company.name }}</strong>
+            </a>
+            {% else %}
+            <a class="navbar-brand" href="{% url 'companies:select' %}">
+                <strong>Система закупок</strong>
+            </a>
+            {% endif %}
+            
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <div class="nav-item d-flex align-items-center">
+                        <span class="navbar-text me-2">{{ user.get_full_name|default:user.username }}</span>
+                        {% if request.current_company %}
+                        <a class="btn btn-outline-light btn-sm" href="{% url 'company_users:logout' request.current_company.slug %}">Выйти</a>
+                        {% else %}
+                        <a class="btn btn-outline-light btn-sm" href="{% url 'legacy_users:logout' %}">Выйти</a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <a class="nav-link" href="{% url 'companies:select' %}">Войти</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if request.current_company %}
+    <!-- Быстрая навигация по разделам компании -->
+    <div class="bg-light border-bottom">
+        <div class="container py-3">
+            <div class="row g-3 text-center">
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="mb-1">Сотрудники</div>
+                            <small class="text-muted">управление сотрудниками компании</small>
+                            <a href="{% url 'company_users:users_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Сотрудники"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="mb-1">Заказы</div>
+                            <small class="text-muted">заявки и закупки</small>
+                            <a href="{% url 'company_orders:orders_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Заказы"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="mb-1">Товары</div>
+                            <small class="text-muted">каталог и номенклатура</small>
+                            <a href="{% url 'company_products:products_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Товары"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="mb-1">Контрагенты</div>
+                            <small class="text-muted">поставщики и партнёры</small>
+                            <a href="{% url 'company_suppliers:suppliers_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Контрагенты"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="mb-1">Подразделения</div>
+                            <small class="text-muted">структура и отделы</small>
+                            <a href="{% url 'company_departments:departments_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Подразделения"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="mb-1">Компания</div>
+                            <small class="text-muted">настройки и реквизиты компании</small>
+                            <a href="{% url 'companies:settings' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Компания"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Основной контент -->
+    <main class="container mt-4">
+        <!-- Сообщения -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

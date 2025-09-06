@@ -1,0 +1,24 @@
+{
+  "name": "purchases",
+  "version": "1.0.0",
+  "description": "Django REST API для управления пользователями и их профилями.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AGembickiy/purchases.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AGembickiy/purchases/issues"
+  },
+  "homepage": "https://github.com/AGembickiy/purchases#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.1.13"
+  }
+}

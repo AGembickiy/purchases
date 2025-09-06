@@ -1,0 +1,185 @@
+{% extends 'companies/base.html' %}
+
+{% block title %}Настройки {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Настройки компании</h2>
+            <a href="{% url 'companies:dashboard' company.slug %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Назад к дашборду
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <!-- Навигация по настройкам -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Разделы настроек</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="#general" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                    <i class="bi bi-gear"></i> Основные
+                </a>
+                <a href="#users" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                    <i class="bi bi-people"></i> Пользователи
+                </a>
+                <a href="#appearance" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                    <i class="bi bi-palette"></i> Внешний вид
+                </a>
+                <a href="#billing" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                    <i class="bi bi-credit-card"></i> Тарифы
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="tab-content">
+            <!-- Основные настройки -->
+            <div class="tab-pane fade show active" id="general">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Основная информация</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Название компании</label>
+                                        <input type="text" class="form-control" value="{{ company.name }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Тип организации</label>
+                                        <select class="form-control">
+                                            {% for value, label in company.COMPANY_TYPES %}
+                                            <option value="{{ value }}" {% if company.company_type == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Описание</label>
+                                <textarea class="form-control" rows="3">{{ company.description }}</textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Телефон</label>
+                                        <input type="text" class="form-control" value="{{ company.phone }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="{{ company.email }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Настройки пользователей -->
+            <div class="tab-pane fade" id="users">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Управление пользователями</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="allowRegistration" 
+                                   {% if settings.allow_user_registration %}checked{% endif %}>
+                            <label class="form-check-label" for="allowRegistration">
+                                Разрешить регистрацию новых пользователей
+                            </label>
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="requireEmailVerification"
+                                   {% if settings.require_email_verification %}checked{% endif %}>
+                            <label class="form-check-label" for="requireEmailVerification">
+                                Требовать подтверждение email
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Сохранить настройки</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Внешний вид -->
+            <div class="tab-pane fade" id="appearance">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Оформление</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Логотип компании</label>
+                            <input type="file" class="form-control" accept="image/*">
+                            {% if settings.logo %}
+                            <div class="mt-2">
+                                <img src="{{ settings.logo.url }}" alt="Логотип" style="max-height: 100px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Цвет темы</label>
+                            <input type="color" class="form-control form-control-color" 
+                                   value="{{ settings.theme_color }}">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Сохранить оформление</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Тарифы -->
+            <div class="tab-pane fade" id="billing">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Тарифный план</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h6>Текущий план: Базовый</h6>
+                            <p class="mb-0">Доступ ко всем основным функциям системы закупок.</p>
+                        </div>
+                        
+                        <p class="text-muted">
+                            Управление тарифами будет доступно в следующих версиях системы.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Активация первой вкладки при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    const firstTab = document.querySelector('.list-group-item');
+    if (firstTab) {
+        firstTab.classList.add('active');
+    }
+});
+</script>
+{% endblock %}
