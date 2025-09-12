@@ -1,0 +1,184 @@
+{% extends 'companies/base.html' %}
+
+{% block title %}Вход в систему - Система закупок{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="dashboard-card">
+                <!-- Заголовок -->
+                <div class="text-center mb-6">
+                    <div class="flex items-center justify-center mb-4">
+                        <i class="bi bi-building-gear text-primary-600 text-3xl mr-3"></i>
+                        <h1 class="text-2xl font-semibold text-neutral-900">Система закупок</h1>
+                    </div>
+                    <p class="text-neutral-500">Войдите в свой аккаунт для работы с системой</p>
+                </div>
+
+                <!-- Сообщения -->
+                {% if messages %}
+                    <div class="space-y-3 mb-6">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Форма входа -->
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <!-- Поле компании -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="bi bi-building text-primary-600 mr-2"></i>
+                            {{ form.company_slug.label }}
+                        </label>
+                        {{ form.company_slug }}
+                        {% if form.company_slug.help_text %}
+                            <div class="text-sm text-neutral-500 mt-1">{{ form.company_slug.help_text }}</div>
+                        {% endif %}
+                        {% if form.company_slug.errors %}
+                            <div class="text-sm text-error-600 mt-1">
+                                {% for error in form.company_slug.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Поле логина -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="bi bi-person text-primary-600 mr-2"></i>
+                            {{ form.username.label }}
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-sm text-error-600 mt-1">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Поле пароля -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="bi bi-key text-primary-600 mr-2"></i>
+                            {{ form.password.label }}
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-sm text-error-600 mt-1">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Кнопка входа -->
+                    <div class="pt-2">
+                        <button type="submit" class="btn btn-primary w-full">
+                            <i class="bi bi-box-arrow-in-right mr-2"></i>
+                            Войти в систему
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Подсказки с компаниями -->
+                {% if popular_companies %}
+                <div class="mt-6 pt-4 border-t border-neutral-200">
+                    <h6 class="text-sm font-medium text-neutral-700 mb-3">
+                        <i class="bi bi-lightbulb text-warning-500 mr-2"></i>
+                        Популярные компании:
+                    </h6>
+                    <div class="space-y-2">
+                        {% for company in popular_companies %}
+                        <button type="button" 
+                                class="btn-action btn-action-view w-full text-left"
+                                onclick="fillCompanySlug('{{ company.slug }}')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-medium">{{ company.name }}</div>
+                                    <div class="text-sm text-neutral-500">ID: {{ company.slug }}</div>
+                                </div>
+                                <i class="bi bi-arrow-right text-neutral-400"></i>
+                            </div>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Дополнительные ссылки -->
+                <div class="mt-6 pt-4 border-t border-neutral-200 text-center space-y-2">
+                    <p class="text-sm text-neutral-500">
+                        <i class="bi bi-info-circle mr-1"></i>
+                        Для создания новых пользователей обратитесь к администратору
+                    </p>
+                    <div class="flex justify-center space-x-4 text-sm">
+                        <a href="{% url 'companies:register' %}" class="text-primary-600 hover:text-primary-700">
+                            <i class="bi bi-building-add mr-1"></i>
+                            Зарегистрировать компанию
+                        </a>
+                        <a href="{% url 'admin:login' %}" class="text-secondary-600 hover:text-secondary-700">
+                            <i class="bi bi-gear mr-1"></i>
+                            Вход для администраторов
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Функция для заполнения поля компании при клике на подсказку
+function fillCompanySlug(slug) {
+    const companyField = document.getElementById('id_company_slug');
+    if (companyField) {
+        companyField.value = slug;
+        companyField.focus();
+        // Добавляем визуальный эффект
+        companyField.classList.add('ring-2', 'ring-primary-500');
+        setTimeout(() => {
+            companyField.classList.remove('ring-2', 'ring-primary-500');
+        }, 1000);
+    }
+}
+
+// Автофокус на первое поле при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    const firstField = document.getElementById('id_company_slug');
+    if (firstField) {
+        firstField.focus();
+    }
+});
+
+// Улучшение UX: переход между полями по Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const fields = ['id_company_slug', 'id_username', 'id_password'];
+    
+    fields.forEach((fieldId, index) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && index < fields.length - 1) {
+                    e.preventDefault();
+                    const nextField = document.getElementById(fields[index + 1]);
+                    if (nextField) {
+                        nextField.focus();
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

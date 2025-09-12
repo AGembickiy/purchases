@@ -23,8 +23,9 @@ class CompanyMiddleware(MiddlewareMixin):
             if request.path.startswith(path):
                 return None
         
-        # Пропускаем страницы выбора и регистрации компаний
+        # Пропускаем страницы входа, выбора и регистрации компаний
         company_exempt_paths = [
+            reverse('companies:unified_login'),
             reverse('companies:select'),
             reverse('companies:register'),
         ]
@@ -32,10 +33,10 @@ class CompanyMiddleware(MiddlewareMixin):
         if request.path in company_exempt_paths:
             return None
         
-        # Если пользователь не авторизован, перенаправляем на выбор компании
+        # Если пользователь не авторизован, перенаправляем на единую форму входа
         if not request.user.is_authenticated:
             if not request.path.startswith('/companies/'):
-                return redirect('companies:select')
+                return redirect('companies:unified_login')
             return None
         
         # Получаем текущую компанию из URL или сессии
@@ -82,7 +83,7 @@ class CompanyMiddleware(MiddlewareMixin):
             except CompanyMembership.DoesNotExist:
                 # У пользователя нет доступа к этой компании
                 if request.path.startswith(f'/companies/{current_company.slug}/'):
-                    return redirect('companies:select')
+                    return redirect('companies:unified_login')
         
         # Если пользователь авторизован, но не выбрал компанию
         if not hasattr(request, 'current_company'):
@@ -98,9 +99,9 @@ class CompanyMiddleware(MiddlewareMixin):
                     company = user_companies.first().company
                     return redirect('companies:dashboard', company_slug=company.slug)
             
-            # Перенаправляем на выбор компании
+            # Перенаправляем на единую форму входа
             if not request.path.startswith('/companies/'):
-                return redirect('companies:select')
+                return redirect('companies:unified_login')
         
         return None
 

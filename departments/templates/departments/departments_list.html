@@ -1,97 +1,126 @@
-{% extends 'users/base.html' %}
+{% extends 'companies/user_base.html' %}
 
-{% block title %}Подразделения - Система управления{% endblock %}
+{% block title %}Подразделения - {{ company.name }} - Система управления{% endblock %}
 
-{% block content %}
-<div class="departments-container">
-    <div class="departments-header">
-        <h1>Подразделения</h1>
-        <p>Управление структурой организации</p>
+{% block user_content %}
+<div class="page-container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <div class="flex items-center mb-4">
+            <i class="bi bi-diagram-3 text-primary-600 text-2xl mr-3"></i>
+            <h1 class="page-title">Подразделения</h1>
+        </div>
+        <p class="page-subtitle">Структура и организация отделов компании</p>
     </div>
 
-    <div class="departments-content">
-        <div class="placeholder-content">
-            <div class="placeholder-icon">🏛️</div>
-            <h2>Модуль подразделений</h2>
-            <p>Здесь будет функциональность для управления подразделениями:</p>
-            <ul>
-                <li>Структура организации</li>
-                <li>Добавление подразделений</li>
-                <li>Иерархия отделов</li>
-                <li>Руководители подразделений</li>
-                <li>Сотрудники по отделам</li>
-            </ul>
+    <!-- Поиск и действия -->
+    <div class="content-section">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex space-x-4">
+                <div class="form-group mb-0">
+                    <input type="text" class="form-input-enhanced" placeholder="Поиск подразделений..." id="searchInput">
+                </div>
+                <div class="form-group mb-0">
+                    <select class="form-select">
+                        <option>Все уровни</option>
+                        <option>Отделы</option>
+                        <option>Секторы</option>
+                        <option>Группы</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary">
+                <i class="bi bi-plus mr-2"></i>
+                Создать подразделение
+            </button>
+        </div>
+
+        <!-- Статистика структуры -->
+        <div class="content-grid content-grid-4 mb-6">
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-primary-600">5</div>
+                <div class="dashboard-metric-label">Отделов</div>
+            </div>
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-success-600">12</div>
+                <div class="dashboard-metric-label">Секторов</div>
+            </div>
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-warning-600">8</div>
+                <div class="dashboard-metric-label">Руководителей</div>
+            </div>
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-neutral-600">45</div>
+                <div class="dashboard-metric-label">Сотрудников</div>
+            </div>
+        </div>
+
+        <!-- Быстрые действия -->
+        <div class="flex space-x-3 mb-6">
+            <button class="btn btn-outline">
+                <i class="bi bi-diagram-2 text-primary-500 mr-2"></i>
+                Организационная схема
+            </button>
+            <button class="btn btn-outline">
+                <i class="bi bi-people text-success-500 mr-2"></i>
+                Распределение сотрудников
+            </button>
+            <button class="btn btn-outline">
+                <i class="bi bi-graph-up text-warning-500 mr-2"></i>
+                Отчеты по отделам
+            </button>
+        </div>
+
+        <!-- Структура подразделений -->
+        <div class="dashboard-card">
+            <div class="flex items-center justify-between p-6 border-b border-neutral-200">
+                <h2 class="text-lg font-semibold text-neutral-900">Структура организации</h2>
+                <div class="flex space-x-2">
+                    <button class="btn-action btn-action-view">
+                        <i class="bi bi-diagram-3 mr-2"></i>
+                        Дерево
+                    </button>
+                    <button class="btn-action btn-action-edit">
+                        <i class="bi bi-list-nested mr-2"></i>
+                        Список
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="text-center py-12">
+                    <div class="text-6xl mb-4">🏛️</div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">Структура не настроена</h3>
+                    <p class="text-neutral-500 mb-6">Создайте первое подразделение для организации структуры компании</p>
+                    
+                    <div class="max-w-md mx-auto space-y-3 text-left">
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Иерархическая структура отделов</span>
+                        </div>
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Назначение руководителей</span>
+                        </div>
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Распределение сотрудников</span>
+                        </div>
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Контроль полномочий</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-plus mr-2"></i>
+                            Создать первое подразделение
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    .departments-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    .departments-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        border-radius: 15px;
-        color: white;
-    }
-
-    .departments-header h1 {
-        margin-bottom: 0.5rem;
-        font-size: 2.5rem;
-    }
-
-    .departments-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
-
-    .departments-content {
-        background: white;
-        border-radius: 15px;
-        padding: 3rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .placeholder-content {
-        text-align: center;
-    }
-
-    .placeholder-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-
-    .placeholder-content h2 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        font-size: 2rem;
-    }
-
-    .placeholder-content p {
-        color: #7f8c8d;
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-    }
-
-    .placeholder-content ul {
-        text-align: left;
-        max-width: 400px;
-        margin: 0 auto;
-        color: #34495e;
-    }
-
-    .placeholder-content li {
-        margin-bottom: 0.5rem;
-        padding: 0.5rem;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border-left: 4px solid #27ae60;
-    }
-</style>
 {% endblock %}

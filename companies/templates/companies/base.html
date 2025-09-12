@@ -41,84 +41,96 @@
         </div>
     </nav>
 
-    {% if request.current_company %}
-    <!-- Быстрая навигация по разделам компании -->
+    <!-- Быстрая навигация по разделам компании (всегда показываем) -->
     <div class="bg-light border-bottom">
-        <div class="container py-3">
-            <div class="row g-3 text-center">
-                <div class="col-12 col-md-3">
-                    <div class="card h-100 position-relative">
-                        <div class="card-body">
-                            <div class="mb-1">Сотрудники</div>
-                            <small class="text-muted">управление сотрудниками компании</small>
-                            <a href="{% url 'company_users:users_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Сотрудники"></a>
-                        </div>
-                    </div>
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-9 col-lg-10">
+                    <!-- Основной контент страницы -->
+                    <main>
+                        <!-- Сообщения -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% block content %}{% endblock %}
+                    </main>
                 </div>
-                <div class="col-12 col-md-3">
-                    <div class="card h-100 position-relative">
-                        <div class="card-body">
-                            <div class="mb-1">Заказы</div>
-                            <small class="text-muted">заявки и закупки</small>
-                            <a href="{% url 'company_orders:orders_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Заказы"></a>
+                <div class="col-3 col-lg-2">
+                    <div class="d-flex flex-column gap-1">
+                        {% if request.current_company %}
+                        <div class="card position-relative">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">Сотрудники</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">управление сотрудниками</small>
+                                <a href="{% url 'company_users:users_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Сотрудники"></a>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="card h-100 position-relative">
-                        <div class="card-body">
-                            <div class="mb-1">Товары</div>
-                            <small class="text-muted">каталог и номенклатура</small>
-                            <a href="{% url 'company_products:products_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Товары"></a>
+                        <div class="card position-relative">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">Заказы</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">заявки и закупки</small>
+                                <a href="{% url 'company_orders:orders_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Заказы"></a>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="card h-100 position-relative">
-                        <div class="card-body">
-                            <div class="mb-1">Контрагенты</div>
-                            <small class="text-muted">поставщики и партнёры</small>
-                            <a href="{% url 'company_suppliers:suppliers_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Контрагенты"></a>
+                        <div class="card position-relative">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">Товары</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">каталог и номенклатура</small>
+                                <a href="{% url 'company_products:products_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Товары"></a>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="card h-100 position-relative">
-                        <div class="card-body">
-                            <div class="mb-1">Подразделения</div>
-                            <small class="text-muted">структура и отделы</small>
-                            <a href="{% url 'company_departments:departments_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Подразделения"></a>
+                        <div class="card position-relative">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">Контрагенты</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">поставщики и партнёры</small>
+                                <a href="{% url 'company_suppliers:suppliers_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Контрагенты"></a>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <div class="card h-100 position-relative">
-                        <div class="card-body">
-                            <div class="mb-1">Компания</div>
-                            <small class="text-muted">настройки и реквизиты компании</small>
-                            <a href="{% url 'companies:settings' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Компания"></a>
+                        <div class="card position-relative">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">Подразделения</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">структура и отделы</small>
+                                <a href="{% url 'company_departments:departments_list' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Подразделения"></a>
+                            </div>
                         </div>
+                        <div class="card position-relative">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">Компания</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">настройки и реквизиты</small>
+                                <a href="{% url 'companies:settings' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Компания"></a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Навигация для неавторизованных пользователей -->
+                        <div class="card">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">💡 Вход</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">авторизация</small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">📋 О системе</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">информация</small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body py-1 px-2">
+                                <div class="mb-0 fw-bold small">📞 Поддержка</div>
+                                <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">помощь и контакты</small>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    {% endif %}
-    
-    <!-- Основной контент -->
-    <main class="container mt-4">
-        <!-- Сообщения -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        
-        {% block content %}{% endblock %}
-    </main>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

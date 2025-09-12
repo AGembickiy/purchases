@@ -210,9 +210,9 @@ if DEBUG:
 SITE_ID = 1
 
 # Настройки авторизации для мультитенантной системы
-LOGIN_URL = '/companies/'  # Перенаправляем на выбор компании вместо стандартного логина
-LOGIN_REDIRECT_URL = '/companies/'  # После логина перенаправляем на выбор компании
-LOGOUT_REDIRECT_URL = '/companies/'  # После выхода перенаправляем на выбор компании
+LOGIN_URL = '/companies/'  # Перенаправляем на единую форму входа
+LOGIN_REDIRECT_URL = '/companies/'  # После логина перенаправляем на единую форму входа
+LOGOUT_REDIRECT_URL = '/companies/'  # После выхода перенаправляем на единую форму входа
 
 # Import Export settings
 IMPORT_EXPORT_USE_TRANSACTIONS = True

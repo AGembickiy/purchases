@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 
 from .models import Company, CompanyMembership, CompanySettings
-from .forms import CompanyRegistrationForm, CompanyLoginForm
+from .forms import CompanyRegistrationForm, CompanyLoginForm, UnifiedLoginForm
 
 
 def company_select(request):
@@ -43,6 +43,49 @@ def company_select(request):
         'popular_companies': popular_companies,
     }
     return render(request, 'companies/select.html', context)
+
+
+def unified_login(request):
+    """Единая форма входа: компания + логин + пароль"""
+    if request.user.is_authenticated:
+        # Если пользователь уже авторизован, перенаправляем на выбор компании
+        return redirect('companies:select')
+    
+    if request.method == 'POST':
+        form = UnifiedLoginForm(request.POST)
+        if form.is_valid():
+            # Форма уже провалидировала все данные в методе clean()
+            company = form.cleaned_data['company']
+            user = form.cleaned_data['user']
+            
+            # Авторизуем пользователя
+            login(request, user)
+            
+            # Сохраняем текущую компанию в сессии
+            request.session['current_company_id'] = str(company.id)
+            request.session['current_company_slug'] = company.slug
+            
+            messages.success(request, f'Добро пожаловать в {company.name}!')
+            return redirect('companies:dashboard', company_slug=company.slug)
+        else:
+            # Показываем ошибки формы
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == '__all__':
+                        messages.error(request, error)
+                    else:
+                        messages.error(request, f'{form.fields[field].label}: {error}')
+    else:
+        form = UnifiedLoginForm()
+    
+    # Показываем популярные компании для подсказки
+    popular_companies = Company.objects.filter(is_active=True)[:5]
+    
+    context = {
+        'form': form,
+        'popular_companies': popular_companies,
+    }
+    return render(request, 'companies/unified_login.html', context)
 
 
 def company_register(request):

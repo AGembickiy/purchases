@@ -144,6 +144,80 @@ class CompanyLoginForm(forms.Form):
         return company_slug
 
 
+class UnifiedLoginForm(forms.Form):
+    """Единая форма входа: компания + логин + пароль"""
+    
+    company_slug = forms.CharField(
+        max_length=100,
+        label="Компания",
+        help_text="Введите идентификатор вашей компании",
+        widget=forms.TextInput(attrs={
+            'class': 'form-input-enhanced', 
+            'placeholder': 'my-company',
+            'autocomplete': 'organization'
+        })
+    )
+    
+    username = forms.CharField(
+        max_length=150,
+        label="Логин",
+        widget=forms.TextInput(attrs={
+            'class': 'form-input-enhanced',
+            'placeholder': 'Имя пользователя или Email',
+            'autocomplete': 'username'
+        })
+    )
+    
+    password = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input-enhanced',
+            'placeholder': 'Введите пароль',
+            'autocomplete': 'current-password'
+        })
+    )
+    
+    def clean_company_slug(self):
+        company_slug = self.cleaned_data.get('company_slug')
+        if not Company.objects.filter(slug=company_slug, is_active=True).exists():
+            raise forms.ValidationError("Компания с таким идентификатором не найдена или неактивна.")
+        return company_slug
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        company_slug = cleaned_data.get('company_slug')
+        username = cleaned_data.get('username')
+        password = cleaned_data.get('password')
+        
+        if company_slug and username and password:
+            try:
+                from django.contrib.auth import authenticate
+                from .models import CompanyMembership
+                
+                # Получаем компанию
+                company = Company.objects.get(slug=company_slug, is_active=True)
+                
+                # Аутентифицируем пользователя
+                user = authenticate(username=username, password=password)
+                if not user:
+                    raise forms.ValidationError("Неверные учетные данные.")
+                
+                # Проверяем доступ к компании
+                if not CompanyMembership.objects.filter(
+                    company=company, user=user, is_active=True
+                ).exists():
+                    raise forms.ValidationError("У вас нет доступа к этой компании.")
+                
+                # Сохраняем объекты для использования во view
+                cleaned_data['company'] = company
+                cleaned_data['user'] = user
+                
+            except Company.DoesNotExist:
+                raise forms.ValidationError("Компания не найдена.")
+                
+        return cleaned_data
+
+
 class CompanyUpdateForm(forms.ModelForm):
     """Форма обновления информации о компании"""
     

@@ -4,8 +4,11 @@ from . import views
 app_name = 'companies'
 
 urlpatterns = [
-    # Главная страница выбора компании
-    path('', views.company_select, name='select'),
+    # Новая единая форма входа (главная страница)
+    path('', views.unified_login, name='unified_login'),
+    
+    # Старая страница выбора компании (для совместимости)
+    path('old/', views.company_select, name='select'),
     
     # Регистрация компании
     path('register/', views.company_register, name='register'),

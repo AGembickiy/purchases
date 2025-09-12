@@ -1,97 +1,126 @@
-{% extends 'users/base.html' %}
+{% extends 'companies/user_base.html' %}
 
-{% block title %}Заказы - Система управления{% endblock %}
+{% block title %}Заказы - {{ company.name }} - Система управления{% endblock %}
 
-{% block content %}
-<div class="orders-container">
-    <div class="orders-header">
-        <h1>Заказы</h1>
-        <p>Управление заказами и покупками</p>
+{% block user_content %}
+<div class="page-container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <div class="flex items-center mb-4">
+            <i class="bi bi-cart-check text-primary-600 text-2xl mr-3"></i>
+            <h1 class="page-title">Заказы</h1>
+        </div>
+        <p class="page-subtitle">Управление заявками и заказами компании</p>
     </div>
 
-    <div class="orders-content">
-        <div class="placeholder-content">
-            <div class="placeholder-icon">📋</div>
-            <h2>Модуль заказов</h2>
-            <p>Здесь будет функциональность для управления заказами:</p>
-            <ul>
-                <li>Список заказов</li>
-                <li>Создание новых заказов</li>
-                <li>Статусы и отслеживание</li>
-                <li>История заказов</li>
-                <li>Отчеты и аналитика</li>
-            </ul>
+    <!-- Поиск и действия -->
+    <div class="content-section">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex space-x-4">
+                <div class="form-group mb-0">
+                    <input type="text" class="form-input-enhanced" placeholder="Поиск заказов..." id="searchInput">
+                </div>
+                <div class="form-group mb-0">
+                    <select class="form-select">
+                        <option>Все статусы</option>
+                        <option>Черновик</option>
+                        <option>В процессе</option>
+                        <option>Завершено</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary">
+                <i class="bi bi-plus mr-2"></i>
+                Создать заказ
+            </button>
+        </div>
+
+        <!-- Статистика заказов -->
+        <div class="content-grid content-grid-4 mb-6">
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-warning-600">5</div>
+                <div class="dashboard-metric-label">В ожидании</div>
+            </div>
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-primary-600">12</div>
+                <div class="dashboard-metric-label">В процессе</div>
+            </div>
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-success-600">28</div>
+                <div class="dashboard-metric-label">Завершено</div>
+            </div>
+            <div class="dashboard-card dashboard-metric text-center">
+                <div class="dashboard-metric-value text-neutral-600">₽ 450K</div>
+                <div class="dashboard-metric-label">Общая сумма</div>
+            </div>
+        </div>
+
+        <!-- Быстрые фильтры -->
+        <div class="flex space-x-3 mb-6">
+            <button class="btn btn-outline">
+                <span class="status-badge status-pending mr-2"></span>
+                Ожидающие
+            </button>
+            <button class="btn btn-outline">
+                <span class="status-badge status-processing mr-2"></span>
+                В работе
+            </button>
+            <button class="btn btn-outline">
+                <span class="status-badge status-completed mr-2"></span>
+                Выполненные
+            </button>
+        </div>
+
+        <!-- Список заказов -->
+        <div class="dashboard-card">
+            <div class="flex items-center justify-between p-6 border-b border-neutral-200">
+                <h2 class="text-lg font-semibold text-neutral-900">Список заказов</h2>
+                <div class="flex space-x-2">
+                    <button class="btn-action btn-action-view">
+                        <i class="bi bi-kanban mr-2"></i>
+                        Канбан
+                    </button>
+                    <button class="btn-action btn-action-edit">
+                        <i class="bi bi-table mr-2"></i>
+                        Таблица
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="text-center py-12">
+                    <div class="text-6xl mb-4">📋</div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">Заказы не созданы</h3>
+                    <p class="text-neutral-500 mb-6">Создайте первый заказ для начала работы с закупками</p>
+                    
+                    <div class="max-w-md mx-auto space-y-3 text-left">
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Создание заявок на покупку</span>
+                        </div>
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Контроль статусов заказов</span>
+                        </div>
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Управление бюджетом</span>
+                        </div>
+                        <div class="flex items-center text-neutral-600">
+                            <i class="bi bi-check-circle text-success-500 mr-3"></i>
+                            <span>Отчеты и аналитика</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-plus mr-2"></i>
+                            Создать первый заказ
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    .orders-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    .orders-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        border-radius: 15px;
-        color: white;
-    }
-
-    .orders-header h1 {
-        margin-bottom: 0.5rem;
-        font-size: 2.5rem;
-    }
-
-    .orders-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
-
-    .orders-content {
-        background: white;
-        border-radius: 15px;
-        padding: 3rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .placeholder-content {
-        text-align: center;
-    }
-
-    .placeholder-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-
-    .placeholder-content h2 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        font-size: 2rem;
-    }
-
-    .placeholder-content p {
-        color: #7f8c8d;
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-    }
-
-    .placeholder-content ul {
-        text-align: left;
-        max-width: 400px;
-        margin: 0 auto;
-        color: #34495e;
-    }
-
-    .placeholder-content li {
-        margin-bottom: 0.5rem;
-        padding: 0.5rem;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border-left: 4px solid #3498db;
-    }
-</style>
 {% endblock %}
