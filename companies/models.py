@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import uuid
 
 
@@ -118,6 +120,18 @@ class CompanyMembership(models.Model):
             self.can_manage_orders = True
         
         super().save(*args, **kwargs)
+    
+    def has_full_admin_rights(self):
+        """Проверяет, имеет ли пользователь полные административные права в компании"""
+        return self.role in ['owner', 'admin'] and self.is_active
+    
+    def can_manage_company_settings(self):
+        """Может ли пользователь управлять настройками компании"""
+        return self.role == 'owner' and self.is_active
+    
+    def can_invite_users(self):
+        """Может ли пользователь приглашать новых пользователей"""
+        return self.role in ['owner', 'admin'] and self.can_manage_users and self.is_active
 
 
 class CompanySettings(models.Model):
@@ -143,3 +157,168 @@ class CompanySettings(models.Model):
     
     def __str__(self):
         return f"Настройки {self.company.name}"
+
+
+@receiver(post_save, sender=Company)
+def create_company_defaults(sender, instance, created, **kwargs):
+    """
+    Автоматически создает настройки компании и первое членство владельца при создании новой компании
+    """
+    if created:
+        # Создаем настройки компании
+        CompanySettings.objects.get_or_create(company=instance)
+        
+        # Создаем членство владельца если его еще нет
+        # (это может быть полезно если компания создается программно)
+        membership, membership_created = CompanyMembership.objects.get_or_create(
+            company=instance,
+            user=instance.owner,
+            defaults={
+                'role': 'owner',
+                'is_active': True
+            }
+        )
+        
+        if membership_created:
+            print(f"✅ Создан владелец компании: {instance.owner.username} для {instance.name}")
+
+
+@receiver(post_save, sender=CompanyMembership)
+def log_membership_creation(sender, instance, created, **kwargs):
+    """
+    Логирует создание нового членства в компании
+    """
+    if created:
+        role_display = instance.get_role_display()
+        print(f"✅ Новый пользователь добавлен в компанию: {instance.user.username} ({role_display}) -> {instance.company.name}")
+        
+        # Автоматически устанавливаем расширенные права для админов
+        if instance.role in ['owner', 'admin']:
+            print(f"🔐 Назначены полные административные права для {instance.user.username}")
+            
+        # Логируем специфические права
+        permissions = []
+        if instance.can_manage_users:
+            permissions.append("управление пользователями")
+        if instance.can_manage_orders:
+            permissions.append("управление заказами")
+        if instance.can_manage_products:
+            permissions.append("управление товарами")
+        if instance.can_manage_suppliers:
+            permissions.append("управление поставщиками")
+        if instance.can_view_reports:
+            permissions.append("просмотр отчетов")
+            
+        if permissions:
+            print(f"📋 Права доступа: {', '.join(permissions)}")
+
+
+class CompanyMenuSection(models.Model):
+    """Пользовательские разделы меню для дашборда компании"""
+    
+    SECTION_TYPES = [
+        ('internal', 'Внутренний раздел'),
+        ('external', 'Внешняя ссылка'),
+        ('iframe', 'Встроенная страница'),
+    ]
+    
+    ICON_CHOICES = [
+        ('bi-people', 'Люди'),
+        ('bi-cart', 'Корзина'),
+        ('bi-box', 'Коробка'),
+        ('bi-building', 'Здание'),
+        ('bi-graph-up', 'График'),
+        ('bi-calendar', 'Календарь'),
+        ('bi-folder', 'Папка'),
+        ('bi-gear', 'Настройки'),
+        ('bi-file-text', 'Документ'),
+        ('bi-chat', 'Чат'),
+        ('bi-bell', 'Уведомления'),
+        ('bi-shield', 'Безопасность'),
+        ('bi-tools', 'Инструменты'),
+        ('bi-pie-chart', 'Диаграмма'),
+        ('bi-clipboard', 'Буфер'),
+        ('bi-trophy', 'Трофей'),
+        ('bi-star', 'Звезда'),
+        ('bi-heart', 'Сердце'),
+        ('bi-lightning', 'Молния'),
+        ('bi-cloud', 'Облако'),
+    ]
+    
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='menu_sections')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_menu_sections')
+    
+    # Основная информация
+    title = models.CharField(max_length=100, verbose_name="Название раздела")
+    description = models.CharField(max_length=200, blank=True, verbose_name="Описание")
+    icon = models.CharField(max_length=50, choices=ICON_CHOICES, default='bi-folder', verbose_name="Иконка")
+    
+    # Тип и URL
+    section_type = models.CharField(max_length=20, choices=SECTION_TYPES, default='internal', verbose_name="Тип раздела")
+    url = models.CharField(max_length=500, verbose_name="URL или путь")
+    
+    # Настройки отображения
+    order = models.PositiveIntegerField(default=100, verbose_name="Порядок сортировки")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    open_in_new_tab = models.BooleanField(default=False, verbose_name="Открывать в новой вкладке")
+    
+    # Права доступа
+    required_role = models.CharField(
+        max_length=20, 
+        choices=CompanyMembership.ROLES, 
+        default='employee',
+        verbose_name="Минимальная роль для доступа"
+    )
+    
+    # Временные метки
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    
+    class Meta:
+        verbose_name = "Раздел меню компании"
+        verbose_name_plural = "Разделы меню компании"
+        ordering = ['order', 'title']
+        unique_together = ['company', 'title']
+    
+    def __str__(self):
+        return f"{self.company.name} - {self.title}"
+    
+    def get_full_url(self):
+        """Возвращает полный URL для раздела"""
+        if self.section_type == 'external':
+            return self.url
+        elif self.section_type == 'internal':
+            # Если это внутренний путь, добавляем префикс компании
+            if self.url.startswith('/'):
+                return f"/companies/{self.company.slug}{self.url}"
+            else:
+                return f"/companies/{self.company.slug}/{self.url}"
+        elif self.section_type == 'iframe':
+            return f"/companies/{self.company.slug}/iframe/{self.id}/"
+        return self.url
+    
+    def user_can_access(self, user):
+        """Проверяет, может ли пользователь получить доступ к этому разделу"""
+        try:
+            membership = CompanyMembership.objects.get(
+                company=self.company, 
+                user=user, 
+                is_active=True
+            )
+            
+            # Определяем иерархию ролей
+            role_hierarchy = {
+                'viewer': 1,
+                'employee': 2, 
+                'manager': 3,
+                'admin': 4,
+                'owner': 5
+            }
+            
+            user_level = role_hierarchy.get(membership.role, 0)
+            required_level = role_hierarchy.get(self.required_role, 0)
+            
+            return user_level >= required_level
+            
+        except CompanyMembership.DoesNotExist:
+            return False

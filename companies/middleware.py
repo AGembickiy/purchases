@@ -28,6 +28,7 @@ class CompanyMiddleware(MiddlewareMixin):
             reverse('companies:unified_login'),
             reverse('companies:select'),
             reverse('companies:register'),
+            reverse('companies:auto_login'),
         ]
         
         if request.path in company_exempt_paths:
@@ -54,16 +55,24 @@ class CompanyMiddleware(MiddlewareMixin):
                     pass
         
         # Если компания не найдена в URL, проверяем сессию
-        if not current_company and 'current_company_slug' in request.session:
+        if not current_company:
             try:
-                current_company = Company.objects.get(
-                    slug=request.session['current_company_slug'], 
-                    is_active=True
-                )
-            except Company.DoesNotExist:
+                if 'current_company_slug' in request.session:
+                    current_company = Company.objects.get(
+                        slug=request.session['current_company_slug'], 
+                        is_active=True
+                    )
+            except (Company.DoesNotExist, KeyError):
                 # Очищаем неактуальную информацию из сессии
-                request.session.pop('current_company_slug', None)
-                request.session.pop('current_company_id', None)
+                try:
+                    request.session.pop('current_company_slug', None)
+                    request.session.pop('current_company_id', None)
+                except:
+                    # Игнорируем ошибки сессии
+                    pass
+            except:
+                # Игнорируем любые другие ошибки с сессией
+                pass
         
         # Если у пользователя есть доступ к компании, сохраняем её в request
         if current_company:
@@ -76,9 +85,13 @@ class CompanyMiddleware(MiddlewareMixin):
                 request.current_company = current_company
                 request.current_membership = membership
                 
-                # Обновляем сессию
-                request.session['current_company_id'] = str(current_company.id)
-                request.session['current_company_slug'] = current_company.slug
+                # Обновляем сессию только если она не заблокирована
+                try:
+                    request.session['current_company_id'] = str(current_company.id)
+                    request.session['current_company_slug'] = current_company.slug
+                except:
+                    # Игнорируем ошибки сессии (может быть во время аутентификации)
+                    pass
                 
             except CompanyMembership.DoesNotExist:
                 # У пользователя нет доступа к этой компании
@@ -110,6 +123,14 @@ class CompanyContextMiddleware(MiddlewareMixin):
     """Добавляет информацию о компании в контекст шаблонов"""
     
     def process_template_response(self, request, response):
+        # Пропускаем регистрацию и автовход компании, чтобы избежать конфликтов с сессиями
+        exempt_paths = [
+            reverse('companies:register'),
+            reverse('companies:auto_login'),
+        ]
+        if request.path in exempt_paths:
+            return response
+            
         if hasattr(response, 'context_data') and hasattr(request, 'current_company'):
             if response.context_data is None:
                 response.context_data = {}

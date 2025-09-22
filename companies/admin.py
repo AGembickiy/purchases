@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company, CompanyMembership, CompanySettings
+from .models import Company, CompanyMembership, CompanySettings, CompanyMenuSection
 
 
 @admin.register(Company)
@@ -61,3 +61,33 @@ class CompanySettingsAdmin(admin.ModelAdmin):
             'fields': ('default_currency', 'order_approval_required')
         }),
     )
+
+
+@admin.register(CompanyMenuSection)
+class CompanyMenuSectionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'company', 'section_type', 'required_role', 'order', 'is_active', 'created_by']
+    list_filter = ['company', 'section_type', 'required_role', 'is_active']
+    search_fields = ['title', 'description', 'url']
+    list_editable = ['order', 'is_active']
+    readonly_fields = ['created_by', 'created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title', 'description', 'icon', 'company')
+        }),
+        ('Настройки раздела', {
+            'fields': ('section_type', 'url', 'open_in_new_tab')
+        }),
+        ('Права доступа', {
+            'fields': ('required_role', 'order', 'is_active')
+        }),
+        ('Системная информация', {
+            'fields': ('created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # Создание нового объекта
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)

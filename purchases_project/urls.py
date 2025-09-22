@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,8 +26,8 @@ urlpatterns = [
     # Система компаний (главная точка входа)
     path('companies/', include('companies.urls')),
     
-    # Редирект с главной страницы на выбор компании  
-    path('', include(('companies.urls', 'companies'), namespace='main')),
+    # Главная страница - редирект на единую форму входа
+    path('', lambda request: redirect('companies:unified_login')),
     
     # Старые URL-ы пользователей (временно сохраняем для совместимости)
     path('legacy/users/', include(('users.urls', 'users'), namespace='legacy_users')),

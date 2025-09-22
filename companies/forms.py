@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Company
+from .models import Company, CompanyMembership, CompanyMenuSection
 
 
 class CompanyRegistrationForm(forms.Form):
@@ -240,3 +240,243 @@ class CompanyUpdateForm(forms.ModelForm):
             'tax_number': forms.TextInput(attrs={'class': 'form-control'}),
             'registration_number': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class InviteUserForm(forms.Form):
+    """Форма приглашения нового пользователя в компанию"""
+    
+    # Данные пользователя
+    first_name = forms.CharField(
+        max_length=30,
+        label="Имя",
+        widget=forms.TextInput(attrs={'class': 'form-input-enhanced', 'placeholder': 'Иван'})
+    )
+    
+    last_name = forms.CharField(
+        max_length=30,
+        label="Фамилия",
+        widget=forms.TextInput(attrs={'class': 'form-input-enhanced', 'placeholder': 'Иванов'})
+    )
+    
+    username = forms.CharField(
+        max_length=150,
+        label="Имя пользователя",
+        widget=forms.TextInput(attrs={'class': 'form-input-enhanced', 'placeholder': 'ivan_ivanov'})
+    )
+    
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={'class': 'form-input-enhanced', 'placeholder': 'ivan@example.com'})
+    )
+    
+    password = forms.CharField(
+        label="Временный пароль",
+        widget=forms.PasswordInput(attrs={'class': 'form-input-enhanced'}),
+        help_text="Пользователь может изменить пароль после первого входа"
+    )
+    
+    # Роль в компании
+    role = forms.ChoiceField(
+        choices=CompanyMembership.ROLES,
+        label="Роль в компании",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    # Дополнительная информация
+    position = forms.CharField(
+        required=False,
+        max_length=100,
+        label="Должность",
+        widget=forms.TextInput(attrs={'class': 'form-input-enhanced', 'placeholder': 'Менеджер по закупкам'})
+    )
+    
+    phone = forms.CharField(
+        required=False,
+        max_length=20,
+        label="Телефон",
+        widget=forms.TextInput(attrs={'class': 'form-input-enhanced', 'placeholder': '+7 (999) 123-45-67'})
+    )
+    
+    department = forms.CharField(
+        required=False,
+        max_length=100,
+        label="Отдел",
+        widget=forms.TextInput(attrs={'class': 'form-input-enhanced', 'placeholder': 'Отдел закупок'})
+    )
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Пользователь с таким именем уже существует.")
+        return username
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Пользователь с таким email уже существует.")
+        return email
+
+
+class EditMembershipForm(forms.ModelForm):
+    """Форма редактирования членства пользователя в компании"""
+    
+    class Meta:
+        model = CompanyMembership
+        fields = ['role', 'can_manage_users', 'can_manage_orders', 'can_manage_products', 
+                 'can_manage_suppliers', 'can_view_reports', 'is_active']
+        widgets = {
+            'role': forms.Select(attrs={'class': 'form-select'}),
+            'can_manage_users': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'can_manage_orders': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'can_manage_products': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'can_manage_suppliers': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'can_view_reports': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.current_user = kwargs.pop('current_user', None)
+        self.company = kwargs.pop('company', None)
+        super().__init__(*args, **kwargs)
+        
+        # Владелец может редактировать все роли, админ - только роли ниже своей
+        if self.current_user and hasattr(self.current_user, 'company_memberships'):
+            try:
+                current_membership = self.current_user.company_memberships.get(
+                    company=self.company, is_active=True
+                )
+                if current_membership.role == 'admin':
+                    # Админ не может назначать роли owner или admin
+                    allowed_roles = [choice for choice in CompanyMembership.ROLES 
+                                   if choice[0] not in ['owner', 'admin']]
+                    self.fields['role'].choices = allowed_roles
+            except:
+                pass
+
+
+class MenuSectionForm(forms.ModelForm):
+    """Форма создания/редактирования раздела меню"""
+    
+    class Meta:
+        model = CompanyMenuSection
+        fields = ['title', 'description', 'icon', 'section_type', 'url', 
+                 'required_role', 'order', 'open_in_new_tab', 'is_active']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-input-enhanced', 
+                'placeholder': 'Название раздела'
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-input-enhanced', 
+                'placeholder': 'Краткое описание раздела'
+            }),
+            'icon': forms.Select(attrs={'class': 'form-select'}),
+            'section_type': forms.Select(attrs={'class': 'form-select'}),
+            'url': forms.TextInput(attrs={
+                'class': 'form-input-enhanced', 
+                'placeholder': '/custom-page/ или https://example.com'
+            }),
+            'required_role': forms.Select(attrs={'class': 'form-select'}),
+            'order': forms.NumberInput(attrs={
+                'class': 'form-input-enhanced', 
+                'min': '1', 
+                'max': '999'
+            }),
+            'open_in_new_tab': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+        }
+        help_texts = {
+            'url': 'Для внутренних разделов: /custom-page/, для внешних: https://example.com',
+            'order': 'Чем меньше число, тем выше в списке (1-999)',
+            'required_role': 'Минимальная роль для доступа к разделу'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.company = kwargs.pop('company', None)
+        self.current_user = kwargs.pop('current_user', None)
+        super().__init__(*args, **kwargs)
+        
+        # Ограничиваем роли для обычных админов
+        if self.current_user and self.company:
+            try:
+                current_membership = CompanyMembership.objects.get(
+                    company=self.company, 
+                    user=self.current_user, 
+                    is_active=True
+                )
+                if current_membership.role == 'admin':
+                    # Админ не может создавать разделы для владельцев
+                    allowed_roles = [choice for choice in CompanyMembership.ROLES 
+                                   if choice[0] != 'owner']
+                    self.fields['required_role'].choices = allowed_roles
+            except CompanyMembership.DoesNotExist:
+                pass
+    
+    def clean_url(self):
+        url = self.cleaned_data.get('url')
+        section_type = self.cleaned_data.get('section_type')
+        
+        if section_type == 'external' and url:
+            if not (url.startswith('http://') or url.startswith('https://')):
+                raise forms.ValidationError('Внешние ссылки должны начинаться с http:// или https://')
+        
+        if section_type == 'internal' and url:
+            if url.startswith('http'):
+                raise forms.ValidationError('Внутренние разделы не должны содержать http:// или https://')
+        
+        return url
+    
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if self.company:
+            # Проверяем уникальность названия в рамках компании
+            existing = CompanyMenuSection.objects.filter(
+                company=self.company, 
+                title=title
+            )
+            if self.instance.pk:
+                existing = existing.exclude(pk=self.instance.pk)
+            
+            if existing.exists():
+                raise forms.ValidationError('Раздел с таким названием уже существует в этой компании.')
+        
+        return title
+
+
+class MenuSectionQuickForm(forms.Form):
+    """Быстрая форма для создания простого раздела"""
+    
+    title = forms.CharField(
+        max_length=100,
+        label="Название",
+        widget=forms.TextInput(attrs={
+            'class': 'form-input-enhanced', 
+            'placeholder': 'Название раздела'
+        })
+    )
+    
+    url = forms.CharField(
+        max_length=500,
+        label="Ссылка",
+        widget=forms.TextInput(attrs={
+            'class': 'form-input-enhanced', 
+            'placeholder': '/custom-page/ или https://example.com'
+        })
+    )
+    
+    description = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Описание",
+        widget=forms.TextInput(attrs={
+            'class': 'form-input-enhanced', 
+            'placeholder': 'Краткое описание'
+        })
+    )
+    
+    icon = forms.ChoiceField(
+        choices=CompanyMenuSection.ICON_CHOICES,
+        initial='bi-folder',
+        label="Иконка",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )

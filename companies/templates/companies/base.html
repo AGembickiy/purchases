@@ -105,6 +105,47 @@
                                 <a href="{% url 'companies:settings' request.current_company.slug %}" class="stretched-link" aria-label="Перейти к разделу Компания"></a>
                             </div>
                         </div>
+                        
+                        <!-- Пользовательские разделы меню -->
+                        {% if custom_menu_sections %}
+                            {% for section in custom_menu_sections %}
+                            <div class="card position-relative">
+                                <div class="card-body py-1 px-2">
+                                    <div class="mb-0 fw-bold small">
+                                        {% if section.icon %}
+                                            <i class="bi {{ section.icon }} me-1"></i>
+                                        {% endif %}
+                                        {{ section.title }}
+                                    </div>
+                                    {% if section.description %}
+                                        <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">{{ section.description }}</small>
+                                    {% endif %}
+                                    <a href="{{ section.get_full_url }}" 
+                                       class="stretched-link" 
+                                       {% if section.open_in_new_tab %}target="_blank"{% endif %}
+                                       aria-label="Перейти к разделу {{ section.title }}"></a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <!-- Управление меню (только для владельцев и администраторов) -->
+                        {% if membership.has_full_admin_rights %}
+                        <div class="mt-2">
+                            <div class="card border-primary">
+                                <div class="card-body py-1 px-2">
+                                    <div class="mb-0 fw-bold small text-primary">
+                                        <i class="bi bi-gear me-1"></i>
+                                        Управление меню
+                                    </div>
+                                    <small class="text-muted d-none d-lg-block" style="font-size: 0.7rem;">настройка разделов</small>
+                                    <a href="{% url 'companies:manage_menu' request.current_company.slug %}" 
+                                       class="stretched-link" 
+                                       aria-label="Управление разделами меню"></a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                         {% else %}
                         <!-- Навигация для неавторизованных пользователей -->
                         <div class="card">

@@ -100,17 +100,25 @@
                     </h6>
                     <div class="space-y-2">
                         {% for company in popular_companies %}
-                        <button type="button" 
-                                class="btn-action btn-action-view w-full text-left"
-                                onclick="fillCompanySlug('{{ company.slug }}')">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <div class="font-medium">{{ company.name }}</div>
-                                    <div class="text-sm text-neutral-500">ID: {{ company.slug }}</div>
+                        <div class="flex gap-2">
+                            <button type="button" 
+                                    class="btn-action btn-action-view flex-1 text-left"
+                                    onclick="fillCompanySlug('{{ company.slug }}')">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div class="font-medium">{{ company.name }}</div>
+                                        <div class="text-sm text-neutral-500">ID: {{ company.slug }}</div>
+                                    </div>
+                                    <i class="bi bi-pencil text-neutral-400"></i>
                                 </div>
-                                <i class="bi bi-arrow-right text-neutral-400"></i>
-                            </div>
-                        </button>
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-primary px-3"
+                                    onclick="quickLogin('{{ company.slug }}')"
+                                    title="Быстрый вход">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -139,18 +147,73 @@
 </div>
 
 <script>
-// Функция для заполнения поля компании при клике на подсказку
+// Тестовые данные для автозаполнения (только для разработки)
+const testCredentials = {
+    'technomedia': {
+        username: 'director_tm',
+        password: 'pass123'
+    },
+    'stroy-invest': {
+        username: 'ceo_si', 
+        password: 'pass123'
+    },
+    'kozlov-ip': {
+        username: 'kozlov',
+        password: 'pass123'
+    }
+};
+
+// Функция для автоматического заполнения всех полей
 function fillCompanySlug(slug) {
     const companyField = document.getElementById('id_company_slug');
-    if (companyField) {
+    const usernameField = document.getElementById('id_username');
+    const passwordField = document.getElementById('id_password');
+    
+    if (companyField && usernameField && passwordField) {
+        // Заполняем поле компании
         companyField.value = slug;
-        companyField.focus();
-        // Добавляем визуальный эффект
-        companyField.classList.add('ring-2', 'ring-primary-500');
-        setTimeout(() => {
-            companyField.classList.remove('ring-2', 'ring-primary-500');
-        }, 1000);
+        
+        // Заполняем логин и пароль если есть тестовые данные
+        if (testCredentials[slug]) {
+            usernameField.value = testCredentials[slug].username;
+            passwordField.value = testCredentials[slug].password;
+            
+            // Фокус на кнопку входа
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.focus();
+            }
+        } else {
+            // Если нет тестовых данных, фокус на поле логина
+            usernameField.focus();
+        }
+        
+        // Визуальный эффект заполнения
+        [companyField, usernameField, passwordField].forEach(field => {
+            if (field.value) {
+                field.classList.add('ring-2', 'ring-success-500');
+                setTimeout(() => {
+                    field.classList.remove('ring-2', 'ring-success-500');
+                }, 1500);
+            }
+        });
     }
+}
+
+// Функция быстрого входа - заполняет поля и отправляет форму
+function quickLogin(slug) {
+    const form = document.querySelector('form[method="post"]');
+    if (!form) return;
+    
+    // Заполняем все поля
+    fillCompanySlug(slug);
+    
+    // Ждем немного для визуального эффекта, затем отправляем форму
+    setTimeout(() => {
+        if (testCredentials[slug]) {
+            form.submit();
+        }
+    }, 800);
 }
 
 // Автофокус на первое поле при загрузке

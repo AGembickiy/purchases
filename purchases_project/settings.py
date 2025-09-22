@@ -34,7 +34,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-your-secret-key-here')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'testserver'])
 
 
 # Application definition
@@ -204,6 +204,7 @@ if DEBUG:
         'SHOW_COLLAPSED': True,
         'INTERCEPT_REDIRECTS': False,  # Полностью отключаем перехват редиректов
         'SHOW_TOOLBAR_CALLBACK': 'purchases_project.settings.show_toolbar',
+        'IS_RUNNING_TESTS': False,  # Отключаем toolbar во время тестов
     }
 
 # Sites framework
