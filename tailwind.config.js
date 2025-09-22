@@ -1,13 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    // Django templates
+    "./templates/**/*.html",
     "./companies/templates/**/*.html",
     "./users/templates/**/*.html",
     "./products/templates/**/*.html", 
     "./orders/templates/**/*.html",
     "./suppliers/templates/**/*.html",
     "./departments/templates/**/*.html",
-    "./static/src/**/*.js",
+    
+    // Vue.js компоненты и файлы
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./static/src/**/*.{js,ts}",
   ],
   theme: {
     extend: {

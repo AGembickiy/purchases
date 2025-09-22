@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === ИНТЕГРАЦИЯ С VUE.JS === */
+
+/* Глобальные стили для Vue приложения */
+#app {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Vue Router переходы */
+.vue-fade-enter-active,
+.vue-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.vue-fade-enter-from,
+.vue-fade-leave-to {
+  opacity: 0;
+}
+
+.vue-slide-enter-active,
+.vue-slide-leave-active {
+  transition: transform 0.25s ease;
+}
+
+.vue-slide-enter-from {
+  transform: translateX(-100%);
+}
+
+.vue-slide-leave-to {
+  transform: translateX(100%);
+}
+
 /* CSS переменные для цветовой схемы */
 :root {
   /* Основные цвета - синяя палитра */
@@ -105,6 +138,25 @@
   --dashboard-card-min-height: 8rem;
   --table-row-height: 3rem;
   --form-field-height: 2.75rem;
+  
+  /* Основные цвета темной темы */
+  --bg-primary: #171717;        /* neutral-900 */
+  --bg-secondary: #262626;      /* neutral-800 */
+  --bg-tertiary: #404040;       /* neutral-700 */
+  --text-primary: #f5f5f5;      /* neutral-100 */
+  --text-secondary: #d4d4d4;    /* neutral-300 */
+  --text-muted: #a3a3a3;        /* neutral-400 */
+  --border-primary: #525252;    /* neutral-600 */
+  --border-secondary: #404040;  /* neutral-700 */
+  
+  /* Кнопки */
+  --btn-primary-bg: var(--color-primary-600);
+  --btn-primary-hover: var(--color-primary-700);
+  --btn-primary-text: #ffffff;
+  
+  /* Hover эффекты */
+  --hover-bg: var(--bg-tertiary);
+  --focus-ring: var(--color-primary-500);
 
   /* Радиусы скругления */
   --border-radius-sm: 0.375rem;
@@ -196,12 +248,14 @@
   }
 
   body {
-    @apply bg-neutral-50 text-neutral-900;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold text-neutral-900;
+    font-weight: 600;
+    color: var(--text-primary);
   }
 
   h1 {
@@ -264,27 +318,48 @@
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-soft border border-neutral-200;
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-secondary);
   }
 
   .card-header {
-    @apply px-6 py-4 border-b border-neutral-200;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-secondary);
   }
 
   .card-body {
-    @apply px-6 py-4;
+    padding: 1.5rem;
   }
 
   .card-footer {
-    @apply px-6 py-4 border-t border-neutral-200;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-secondary);
   }
 
   .form-input {
-    @apply w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-lg);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  
+  .form-input:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--color-primary-500);
   }
 
   .form-label {
-    @apply block text-sm font-medium text-neutral-700 mb-1;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
   }
 
   .form-error {
@@ -296,15 +371,25 @@
   }
 
   .table th {
-    @apply px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider border-b border-neutral-200;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-secondary);
   }
 
   .table td {
-    @apply px-4 py-3 text-sm text-neutral-900 border-b border-neutral-200;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-secondary);
   }
 
   .table tbody tr:hover {
-    @apply bg-neutral-50;
+    background-color: var(--bg-tertiary);
   }
 
   .badge {
@@ -355,12 +440,17 @@
 
   /* Dashboard карточки */
   .dashboard-card {
-    @apply bg-white rounded-xl shadow-soft border border-neutral-200 p-6 transition-all duration-200;
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-secondary);
+    padding: 1.5rem;
+    transition: all 0.2s ease;
     min-height: var(--dashboard-card-min-height);
   }
 
   .dashboard-card:hover {
-    @apply shadow-medium;
+    box-shadow: var(--shadow-medium);
     transform: translateY(-2px);
   }
 
@@ -369,11 +459,17 @@
   }
 
   .dashboard-metric-value {
-    @apply text-3xl font-bold text-neutral-900 mb-1;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
   }
 
   .dashboard-metric-label {
-    @apply text-sm text-neutral-500 uppercase tracking-wide;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   /* Статусные компоненты */
@@ -498,12 +594,18 @@
   /* Навигация и макет */
   .main-header {
     height: var(--header-height);
-    @apply bg-white shadow-soft border-b border-neutral-200 px-6 flex items-center justify-between;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-soft);
+    @apply px-6 flex items-center justify-between;
   }
 
   .sidebar {
     width: var(--sidebar-width);
-    @apply bg-white shadow-soft border-r border-neutral-200 h-full overflow-y-auto;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-soft);
+    @apply h-full overflow-y-auto;
   }
 
   .sidebar-nav {
@@ -512,14 +614,18 @@
 
   .sidebar-link {
     @apply flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200;
+    color: var(--text-secondary);
   }
 
   .sidebar-link:hover {
-    @apply bg-neutral-100 text-neutral-900;
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
   }
 
   .sidebar-link.active {
-    @apply bg-primary-100 text-primary-700;
+    background-color: var(--color-primary-800);
+    color: var(--color-primary-200);
+    border: 1px solid var(--color-primary-600);
   }
 
   /* Формы */
@@ -529,21 +635,207 @@
 
   .form-input-enhanced {
     height: var(--form-field-height);
-    @apply w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s ease;
   }
 
   .form-input-enhanced:focus {
-    @apply shadow-medium;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--color-primary-500);
+  }
+
+  .form-input-enhanced::placeholder {
+    color: var(--text-muted);
   }
 
   .form-select {
     height: var(--form-field-height);
-    @apply w-full px-4 py-2 border border-neutral-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  
+  .form-select:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--color-primary-500);
   }
 
   .form-textarea {
-    @apply w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-vertical;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s ease;
+    resize: vertical;
     min-height: 6rem;
+  }
+  
+  .form-textarea:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--color-primary-500);
+  }
+
+  /* Стандартные элементы форм Bootstrap/общие */
+  .form-control {
+    width: 100% !important;
+    padding: 0.8rem 1rem !important;
+    border: 2px solid var(--border-primary) !important;
+    border-radius: var(--border-radius-lg) !important;
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    outline: none !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.875rem !important;
+  }
+
+  .form-control:focus {
+    border-color: var(--color-primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: var(--bg-secondary) !important;
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted) !important;
+  }
+
+  .form-control.readonly {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-muted) !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Специальные стили для полей загрузки файлов */
+  input[type="file"].form-control {
+    padding: 0.5rem !important;
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--border-primary) !important;
+    border-radius: var(--border-radius-lg) !important;
+    cursor: pointer !important;
+  }
+
+  input[type="file"].form-control:focus {
+    border-color: var(--color-primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    outline: none !important;
+  }
+
+  input[type="file"].form-control:hover {
+    background-color: var(--bg-tertiary) !important;
+    border-color: var(--color-primary-400) !important;
+  }
+
+  /* Стилизация кнопки "Выбрать файл" */
+  input[type="file"].form-control::-webkit-file-upload-button {
+    background-color: var(--color-primary-600) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--border-radius-md) !important;
+    margin-right: 1rem !important;
+    cursor: pointer !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  input[type="file"].form-control::-webkit-file-upload-button:hover {
+    background-color: var(--color-primary-700) !important;
+  }
+
+  /* Для Firefox */
+  input[type="file"].form-control::file-selector-button {
+    background-color: var(--color-primary-600) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--border-radius-md) !important;
+    margin-right: 1rem !important;
+    cursor: pointer !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  input[type="file"].form-control::file-selector-button:hover {
+    background-color: var(--color-primary-700) !important;
+  }
+
+  /* Карточки пользователей */
+  .user-card {
+    background-color: var(--bg-secondary) !important;
+    border-radius: 15px !important;
+    padding: 1.5rem !important;
+    box-shadow: var(--shadow-soft) !important;
+    transition: all 0.3s ease !important;
+    border: 2px solid var(--border-secondary) !important;
+  }
+
+  .user-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: var(--shadow-hard) !important;
+    border-color: var(--color-primary-500) !important;
+    background-color: var(--bg-tertiary) !important;
+  }
+
+  .user-avatar .avatar-placeholder {
+    background-color: var(--color-primary-600) !important;
+    color: white !important;
+  }
+
+  .user-name {
+    color: var(--text-primary) !important;
+  }
+
+  .user-username {
+    color: var(--text-secondary) !important;
+  }
+
+  .user-position {
+    color: var(--text-secondary) !important;
+  }
+
+  .user-phone {
+    color: var(--text-secondary) !important;
+  }
+
+  .user-email {
+    color: var(--text-secondary) !important;
+  }
+
+  .user-email-main {
+    color: var(--text-secondary) !important;
+  }
+
+  .user-status {
+    color: var(--text-secondary) !important;
+  }
+
+  .btn-edit-profile {
+    background-color: var(--color-primary-600) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--border-radius-md) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .btn-edit-profile:hover {
+    background-color: var(--color-primary-700) !important;
   }
 
   /* Кнопки действий */

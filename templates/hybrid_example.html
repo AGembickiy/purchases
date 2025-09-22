@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Гибридная страница - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Гибридная страница</h1>
+    <p class="page-subtitle">
+        Демонстрация Django шаблона с возможностью переключения на Vue.js
+    </p>
+    
+    <!-- Переключатель между Django и Vue -->
+    <div class="flex items-center space-x-4 mt-4">
+        <button 
+            id="django-mode" 
+            class="btn btn-primary"
+            onclick="switchToDjango()">
+            Django режим
+        </button>
+        <button 
+            id="vue-mode" 
+            class="btn btn-outline"
+            onclick="switchToVue()">
+            Vue.js режим
+        </button>
+    </div>
+</div>
+
+<!-- Django контент -->
+<div id="django-specific-content">
+    <div class="content-section">
+        <div class="card">
+            <div class="card-header">
+                <h3>Django контент</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-neutral-600 mb-4">
+                    Это стандартный Django шаблон с серверным рендерингом.
+                </p>
+                
+                <!-- Пример данных от Django -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for i in "123" %}
+                    <div class="dashboard-card">
+                        <div class="dashboard-metric">
+                            <div class="dashboard-metric-value">{{ forloop.counter }}42</div>
+                            <div class="dashboard-metric-label">Пример {{ forloop.counter }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Форма Django -->
+                <form method="post" class="mt-6">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Пример поля Django</label>
+                        <input 
+                            type="text" 
+                            name="example_field" 
+                            class="form-input-enhanced"
+                            placeholder="Введите текст...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Отправить через Django
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Маркер для Vue приложения -->
+<div data-vue-app data-component="HybridExample" class="hidden">
+    <!-- Vue.js приложение загрузится здесь -->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchToDjango() {
+    // Показываем Django контент
+    document.getElementById('django-content').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+    
+    // Обновляем кнопки
+    document.getElementById('django-mode').className = 'btn btn-primary';
+    document.getElementById('vue-mode').className = 'btn btn-outline';
+}
+
+function switchToVue() {
+    // Проверяем, загружено ли Vue приложение
+    if (!window.Vue) {
+        // Загружаем Vue приложение
+        {% if debug %}
+        import('/static/dist/js/main.js').then(() => {
+            showVueContent();
+        });
+        {% else %}
+        const script = document.createElement('script');
+        script.src = '{% static "dist/js/main.js" %}';
+        script.onload = showVueContent;
+        document.head.appendChild(script);
+        {% endif %}
+    } else {
+        showVueContent();
+    }
+}
+
+function showVueContent() {
+    // Скрываем Django контент и показываем Vue
+    document.getElementById('django-content').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    
+    // Обновляем кнопки
+    document.getElementById('django-mode').className = 'btn btn-outline';
+    document.getElementById('vue-mode').className = 'btn btn-primary';
+}
+</script>
+{% endblock %}

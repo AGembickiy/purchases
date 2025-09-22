@@ -39,6 +39,9 @@ urlpatterns = [
     path('companies/<slug:company_slug>/orders/', include(('orders.urls', 'orders'), namespace='company_orders')),
     path('companies/<slug:company_slug>/departments/', include(('departments.urls', 'departments'), namespace='company_departments')),
     
+    # API v1
+    path('api/v1/', include('api.v1.urls')),
+    
     # API аутентификация
     path('api-auth/', include('rest_framework.urls')),
 ]

@@ -1,0 +1,52 @@
+/* Основные стили для Vue приложения */
+@import '~/css/output.css';
+
+/* Дополнительные стили для Vue компонентов */
+.vue-component {
+  @apply transition-all duration-200;
+}
+
+/* Анимации для переходов */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.25s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(-100%);
+}
+
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
+/* Стили для компонентов Vue */
+.vue-card {
+  @apply card hover:shadow-medium;
+}
+
+.vue-button {
+  @apply btn transition-all duration-200 transform hover:scale-105;
+}
+
+.vue-input {
+  @apply form-input-enhanced;
+}
+
+.vue-select {
+  @apply form-select;
+}
+
+.vue-textarea {
+  @apply form-textarea;
+}
