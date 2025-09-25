@@ -1086,8 +1086,12 @@ input, textarea, select {
 .sidebar {
   width: var(--sidebar-width);
   background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border-primary);
+  border-left: 1px solid var(--border-primary);
   box-shadow: var(--shadow-soft);
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  z-index: 50;
   height: 100%;
   overflow-y: auto;
 }
@@ -1101,6 +1105,15 @@ input, textarea, select {
 .sidebar-nav {
   padding: 1rem;
 }
+
+/* Основной контент с учетом правого sidebar */
+
+.main-content {
+  margin-right: var(--sidebar-width);
+  transition: margin-right 0.3s ease;
+}
+
+/* Основной layout для страниц с sidebar справа */
 
 .sidebar-link {
   display: flex;
@@ -1595,10 +1608,6 @@ input[type="file"].form-control::file-selector-button:hover {
 
 .me-2 {
   margin-inline-end: 0.5rem;
-}
-
-.ml-0 {
-  margin-left: 0px;
 }
 
 .ml-1 {

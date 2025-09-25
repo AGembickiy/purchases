@@ -75,8 +75,31 @@
     </nav>
 
     <!-- Контейнер для Vue приложения и Django контента -->
-    <div class="flex">
-        <!-- Боковая панель навигации -->
+    <div class="relative">
+        <!-- Основной контент -->
+        <main class="{% if request.current_company %}main-content{% endif %}">
+            <!-- Область для Vue.js приложения -->
+            <div id="app" class="hidden"></div>
+            
+            <!-- Django контент -->
+            <div id="django-content" class="page-container">
+                <!-- Сообщения -->
+                {% if messages %}
+                    <div class="mb-6">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} mb-4">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- Основной контент страницы -->
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+        
+        <!-- Боковая панель навигации (справа) -->
         {% if request.current_company %}
         <aside class="sidebar">
             <nav class="sidebar-nav">
@@ -153,29 +176,6 @@
             </nav>
         </aside>
         {% endif %}
-
-        <!-- Основной контент -->
-        <main class="flex-1 {% if request.current_company %}ml-0{% endif %}">
-            <!-- Область для Vue.js приложения -->
-            <div id="app" class="hidden"></div>
-            
-            <!-- Django контент -->
-            <div id="django-content" class="page-container">
-                <!-- Сообщения -->
-                {% if messages %}
-                    <div class="mb-6">
-                        {% for message in messages %}
-                        <div class="alert alert-{{ message.tags|default:'info' }} mb-4">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                
-                <!-- Основной контент страницы -->
-                {% block content %}{% endblock %}
-            </div>
-        </main>
     </div>
     
     <!-- Vue.js приложение (загружается динамически) -->
